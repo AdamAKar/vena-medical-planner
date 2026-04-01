@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5f1743">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VenaMed">
+<link rel="manifest" href="data:application/json;charset=utf-8,{
+  %22name%22:%22Vena Medical Field Sales%22,
+  %22short_name%22:%22VenaMed%22,
+  %22start_url%22:%22.%22,
+  %22display%22:%22standalone%22,
+  %22background_color%22:%22%230f0c10%22,
+  %22theme_color%22:%22%235f1743%22,
+  %22description%22:%22MicroAngioscope Account Activation Platform%22,
+  %22icons%22:[{%22src%22:%22https://img.icons8.com/fluency/96/medical-doctor.png%22,%22sizes%22:%2296x96%22,%22type%22:%22image/png%22}]
+}">
+<title>Vena Medical · Field Sales</title>
+<script>
+// Load Supabase dynamically — handles file:// and https:// contexts
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  s.crossOrigin = 'anonymous';
+  s.onload = function() { window._sbLoaded = true; };
+  s.onerror = function() {
+    // Try unpkg fallback
+    var s2 = document.createElement('script');
+    s2.src = 'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    s2.onload = function() { window._sbLoaded = true; };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  color-scheme: dark;
+  --deep:#5f1743; --mid:#9a3f79; --mid-lite:#b05490;
+  --dark:#0f0c10; --dark2:#131014;
+  --card:#1c1820; --card2:#221e26; --card3:#282330;
+  --off:#F0ECF0; --silver:#C8CDD4; --silver-dim:#8a8f96;
+  --muted:rgba(255,255,255,.38); --muted2:rgba(255,255,255,.22);
+  --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.04);
+  --green:#22c55e; --green-dim:#16a34a;
+  --amber:#f59e0b; --amber-dim:#d97706;
+  --red:#ef4444; --red-dim:#dc2626;
+  --blue:#3b82f6;
+  --r:10px; --r-sm:6px; --r-lg:14px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.4);
+  --shadow:0 4px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.6);
+  --font:'DM Sans',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
+  
+  /* Phase colours */
+  --ph1:#9a3f79; --ph2:#1a6b8a; --ph3:#374151;
+  --ph4:#7c3aed; --ph5:#c2410c; --ph6:#15803d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--dark);color:var(--off);font-family:var(--font);min-height:100vh;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+::selection{background:rgba(154,63,121,.35);color:#fff}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.22)}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes pulse-warn{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes count-up{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.fade-up{animation:fadeUp .22s ease both}
+.fade-in{animation:fadeIn .18s ease both}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--silver);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px}
+
+/* ── CREDENTIAL BAR ── */
+.cred-bar{background:#0a080b;border-bottom:1px solid rgba(255,255,255,.04);padding:6px 24px;display:flex;align-items:center;gap:0;justify-content:space-between}
+.cred-inputs-group{display:flex;align-items:center;gap:0;flex:1;min-width:0;overflow:hidden}
+.cred-actions-group{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:16px}
+.cred-divider{width:1px;height:18px;background:rgba(255,255,255,.07);flex-shrink:0;margin:0 12px}
+.cred-field{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.cred-field:first-child{flex:1;min-width:0}
+.cred-label{font-size:10px;color:rgba(255,255,255,.28);white-space:nowrap;flex-shrink:0}
+.cred-inp{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:4px 9px;color:rgba(255,255,255,.65);font-size:11px;font-family:var(--font-mono);outline:none;transition:all .15s;width:100%}
+.cred-inp-wide{min-width:180px;max-width:340px}
+.cred-inp:focus{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.06)}
+.cred-inp.ok{border-color:rgba(34,197,94,.4);color:var(--green)}
+.cred-save{padding:5px 14px;background:rgba(154,63,121,.25);border:1px solid rgba(154,63,121,.35);border-radius:5px;color:rgba(255,255,255,.7);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;transition:all .15s;letter-spacing:.3px;flex-shrink:0}
+.cred-save:hover{background:var(--mid);color:#fff;border-color:var(--mid)}
+.cred-search-btn{padding:4px 10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:5px;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;font-family:var(--font);transition:all .14s;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.cred-search-btn:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);color:rgba(255,255,255,.75)}
+.cred-search-kbd{font-size:9px;font-family:var(--font-mono);opacity:.5}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:all .3s}
+.status-dot.ok{background:var(--green);box-shadow:0 0 6px rgba(34,197,94,.5)}
+.status-dot.off{background:rgba(255,255,255,.12)}
+.status-dot.err{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.4)}
+.status-dot.connecting{background:var(--amber);animation:pulse-dot 1s infinite}
+.mini-gauge-wrap{display:none;align-items:center;gap:8px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:4px 10px;transition:all .15s}
+.mini-gauge-wrap:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14)}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(170deg,#1a0612 0%,#2d0a20 30%,var(--deep) 60%,#3a1030 100%);border-bottom:1px solid rgba(200,205,212,.14);padding:14px 24px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 24px rgba(0,0,0,.6)}
+.header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,205,212,.2),transparent)}
+.header-top{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.silver-bar{width:3px;height:28px;background:linear-gradient(180deg,var(--silver),rgba(200,205,212,.15));border-radius:2px;flex-shrink:0}
+.eyebrow{font-size:8px;letter-spacing:3.5px;color:rgba(200,205,212,.38);font-weight:600;text-transform:uppercase;margin-bottom:2px;font-family:var(--font-mono)}
+.h-title{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.2px}
+.h-subtitle{font-size:10px;color:rgba(255,255,255,.3);margin-left:auto;font-family:var(--font-mono)}
+.tabs{display:flex;gap:0;overflow-x:auto;margin-right:-24px;padding-right:24px}
+.tab{padding:9px 17px;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,.42);font-family:var(--font);font-size:11px;font-weight:600;letter-spacing:.2px;border-bottom:2px solid transparent;transition:all .14s;white-space:nowrap;flex-shrink:0;position:relative}
+.tab:hover{color:rgba(255,255,255,.78);background:rgba(255,255,255,.04)}
+.tab.active{color:#fff;border-bottom-color:var(--silver);background:rgba(255,255,255,.05)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:8px;font-size:9px;font-weight:700;margin-left:5px;vertical-align:middle}
+
+/* ── LAYOUT ── */
+.content{padding:20px 24px;max-width:1440px;margin:0 auto}
+.panel{display:none;animation:fadeIn .18s ease}.panel.active{display:block}
+.panel-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:2px;letter-spacing:-.3px}
+.panel-sub{font-size:9px;color:var(--muted2);letter-spacing:2px;margin-bottom:20px;text-transform:uppercase;font-family:var(--font-mono)}
+.sec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px}
+.sec-title{font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-transform:uppercase;font-family:var(--font-mono)}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border2)}
+.info-row:last-child{border-bottom:none}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.two-col{grid-template-columns:1fr}}
+
+/* Status pills */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600;letter-spacing:.4px;white-space:nowrap}
+.pill-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.pill-amber{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.pill-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.18)}
+.pill-purple{background:rgba(154,63,121,.15);color:var(--mid-lite);border:1px solid rgba(154,63,121,.25)}
+.pill-dim{background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.08)}
+
+/* ── TODAY TAB ── */
+.today-grid{display:grid;grid-template-columns:290px 1fr;gap:18px;align-items:start}
+@media(max-width:1000px){.today-grid{grid-template-columns:1fr}}
+.today-right{display:flex;flex-direction:column;gap:14px}
+
+/* Today score card */
+.score-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 18px;text-align:center;position:relative;overflow:hidden}
+.score-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r-lg) var(--r-lg) 0 0;background:linear-gradient(90deg,var(--deep),var(--mid),var(--mid-lite))}
+.score-nums{display:flex;justify-content:space-around;margin-top:14px;padding-top:12px;border-top:1px solid var(--border2)}
+.score-num-item{text-align:center}
+.score-num-val{font-size:18px;font-weight:700;line-height:1;margin-bottom:2px;font-family:var(--font-mono)}
+.score-num-label{font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,.3);font-weight:600}
+
+/* Quick log */
+.quick-log-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ql-btn{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 11px;cursor:pointer;font-family:var(--font);transition:all .14s;display:flex;align-items:center;gap:9px;text-align:left;width:100%}
+.ql-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16);transform:translateY(-1px)}
+.ql-btn:active{transform:translateY(0)}
+.ql-icon{font-size:17px;flex-shrink:0;width:24px;text-align:center}
+.ql-label{font-size:11px;font-weight:600;color:#fff;line-height:1.2;margin-bottom:1px}
+.ql-pts{font-size:9px;font-weight:700;color:var(--green);font-family:var(--font-mono)}
+
+/* Priority cards */
+.priority-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.pc-header{padding:12px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pc-title{font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:7px}
+.pc-link{font-size:10px;color:rgba(255,255,255,.35);cursor:pointer;border:none;background:none;font-family:var(--font);transition:color .14s}
+.pc-link:hover{color:rgba(255,255,255,.7)}
+.pc-body{padding:8px 14px}
+
+/* Action rows */
+.action-item-row{display:flex;align-items:center;gap:11px;padding:9px 2px;border-bottom:1px solid var(--border2);transition:background .1s}
+.action-item-row:last-child{border-bottom:none}
+.action-item-row:hover{background:rgba(255,255,255,.02);border-radius:6px}
+.air-icon{font-size:15px;flex-shrink:0;width:24px;text-align:center}
+.air-content{flex:1;min-width:0}
+.air-label{font-size:12px;font-weight:600;color:#fff;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.air-meta{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.air-action{font-size:9px;padding:3px 9px;border-radius:4px;border:1px solid;cursor:pointer;font-family:var(--font);font-weight:600;background:transparent;white-space:nowrap;flex-shrink:0;transition:opacity .14s}
+.air-action:hover{opacity:.75}
+
+/* Briefing card */
+.briefing-card{background:linear-gradient(135deg,rgba(95,23,67,.18) 0%,rgba(154,63,121,.1) 100%);border:1px solid rgba(154,63,121,.2);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:14px;position:relative;overflow:hidden}
+.briefing-card::before{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle,rgba(154,63,121,.15) 0%,transparent 70%);pointer-events:none}
+.briefing-label{font-size:8px;letter-spacing:2.5px;color:rgba(154,63,121,.7);font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;font-family:var(--font-mono)}
+.briefing-text{font-size:13px;color:rgba(255,255,255,.85);line-height:1.65;font-weight:400}
+.briefing-items{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.briefing-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.5}
+.briefing-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px}
+
+/* Meet-with launcher */
+.meet-launcher{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:14px}
+.meet-label{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:10px;font-family:var(--font-mono)}
+.meet-input-row{display:flex;gap:8px;align-items:center}
+.meet-inp{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:8px 11px;color:#fff;font-size:12px;font-family:var(--font);outline:none;transition:all .15s}
+.meet-inp:focus{border-color:var(--mid);background:rgba(255,255,255,.07)}
+.meet-inp::placeholder{color:rgba(255,255,255,.2)}
+.meet-results{margin-top:8px;display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto}
+.meet-result{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;cursor:pointer;border:1px solid rgba(255,255,255,.06);transition:all .13s}
+.meet-result:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.14)}
+
+/* ── PIPELINE BOARD ── */
+.pipeline-board{display:flex;gap:12px;overflow-x:auto;align-items:flex-start;padding-bottom:12px;min-height:500px}
+.pipeline-col{flex:0 0 220px;background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column;transition:border-color .2s}
+.pipeline-col.drag-over{border-color:var(--mid);background:rgba(154,63,121,.06)}
+.pipeline-col-header{padding:12px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pipeline-col-label{font-size:10px;font-weight:700;display:flex;align-items:center;gap:7px;letter-spacing:.2px}
+.pipeline-col-count{font-size:10px;font-weight:700;font-family:var(--font-mono);background:rgba(255,255,255,.08);padding:1px 6px;border-radius:4px;color:rgba(255,255,255,.45)}
+.pipeline-cards{padding:10px;display:flex;flex-direction:column;gap:8px;flex:1;min-height:80px}
+.pipeline-card{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;user-select:none}
+.pipeline-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:9px 9px 0 0}
+.pipeline-card:hover{background:var(--card3);border-color:rgba(255,255,255,.14);transform:translateY(-2px);box-shadow:var(--shadow)}
+.pipeline-card.dragging{opacity:.5;transform:scale(.97)}
+.pipeline-card-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.3}
+.pipeline-card-meta{font-size:10px;color:var(--muted);margin-bottom:8px}
+.pipeline-card-footer{display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:wrap}
+.stale-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;font-family:var(--font-mono)}
+.stale-fresh{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.18)}
+.stale-warn{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.18)}
+.stale-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.18)}
+.stale-never{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08)}
+.stale-ok{background:rgba(245,158,11,.08);color:var(--amber);border:1px solid rgba(245,158,11,.15)}
+.readiness-ring-wrap{display:flex;align-items:center;gap:5px}
+.pipeline-empty{padding:20px 14px;text-align:center;color:rgba(255,255,255,.18);font-size:11px;line-height:1.6}
+.pipeline-empty-icon{font-size:22px;opacity:.3;margin-bottom:6px}
+
+/* ── ACCOUNTS TAB ── */
+.accounts-layout{display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start}
+@media(max-width:960px){.accounts-layout{grid-template-columns:1fr}}
+.account-list{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;max-height:calc(100vh - 160px);display:flex;flex-direction:column}
+.acct-list-header{padding:12px 14px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.acct-search{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:7px 11px;color:#fff;font-size:11px;font-family:var(--font);outline:none;margin-top:8px;transition:all .15s}
+.acct-search:focus{border-color:var(--mid);background:rgba(255,255,255,.07)}
+.acct-search::placeholder{color:rgba(255,255,255,.2)}
+.acct-scroll{overflow-y:auto;flex:1;min-height:120px}
+.acct-item{padding:11px 14px;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .12s;display:flex;align-items:center;gap:10px;position:relative}
+.acct-item:hover{background:rgba(255,255,255,.03)}
+.acct-item.active{background:rgba(95,23,67,.15)}
+.acct-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--mid)}
+.acct-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.acct-name{font-size:12px;font-weight:600;color:#fff;margin-bottom:1px}
+.acct-meta{font-size:10px;color:var(--muted)}
+.acct-phase-pip{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.3px;margin-left:auto;white-space:nowrap;flex-shrink:0;font-family:var(--font-mono)}
+.add-acct-btn{padding:5px 12px;background:rgba(154,63,121,.2);border:1px solid rgba(154,63,121,.3);border-radius:5px;color:var(--mid-lite);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s}
+.add-acct-btn:hover{background:var(--mid);color:#fff;border-color:var(--mid)}
+
+/* Account detail */
+.acct-detail{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px}
+.acct-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:60px 20px;color:var(--muted)}
+.acct-empty-icon{font-size:40px;opacity:.2}
+.acct-detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.adh-left{display:flex;gap:12px;align-items:flex-start}
+.adh-icon{font-size:28px}
+.adh-name{font-size:17px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.2px}
+.adh-meta{font-size:11px;color:var(--muted)}
+.adh-actions{display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.adh-btn{padding:6px 12px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);border:1px solid;transition:all .14s}
+.adh-btn-primary{background:rgba(154,63,121,.2);border-color:rgba(154,63,121,.35);color:var(--mid-lite)}
+.adh-btn-primary:hover{background:var(--mid);color:#fff;border-color:var(--mid)}
+.adh-btn-ghost{background:transparent;border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
+.adh-btn-ghost:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.7)}
+
+/* Phase journey */
+.phase-journey{display:flex;align-items:flex-start;gap:0;margin-bottom:18px;overflow-x:auto;padding-bottom:4px}
+.phase-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:70px;position:relative;cursor:pointer}
+.phase-step::after{content:'';position:absolute;top:16px;right:0;width:50%;height:1px;background:rgba(255,255,255,.08)}
+.phase-step:first-child::before{display:none}
+.phase-step:last-child::after{display:none}
+.phase-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:5px;transition:all .18s;position:relative;z-index:1;background:var(--card)}
+.phase-dot.done{opacity:1}
+.phase-dot.current{box-shadow:0 0 0 3px rgba(255,255,255,.1),0 0 12px rgba(154,63,121,.3)}
+.phase-dot.todo{opacity:.28}
+.phase-label{font-size:7px;letter-spacing:.3px;font-weight:600;text-align:center;line-height:1.35;color:var(--muted);max-width:64px;font-family:var(--font-mono)}
+
+/* Account sub-tabs */
+.acct-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid var(--border2)}
+.acct-tab{padding:7px 14px;border:none;background:transparent;color:var(--muted2);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all .13s;margin-bottom:-1px;letter-spacing:.2px}
+.acct-tab.active{color:#fff;border-bottom-color:var(--mid)}
+.acct-sub{display:none;animation:fadeIn .15s ease}.acct-sub.active{display:block}
+
+/* Next best touch cards */
+.nbt-card{background:rgba(95,23,67,.08);border:1px solid rgba(154,63,121,.18);border-radius:10px;padding:14px 16px;margin-bottom:10px;transition:border-color .15s}
+.nbt-card:hover{border-color:rgba(154,63,121,.35)}
+.nbt-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.nbt-sh-name{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px}
+.nbt-touch-type{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600;margin-left:auto;white-space:nowrap;font-family:var(--font-mono)}
+.nbt-action{font-size:11px;color:rgba(255,255,255,.65);line-height:1.65;margin-bottom:10px}
+.nbt-key-ask{font-size:10px;color:rgba(255,255,255,.45);font-style:italic;margin-bottom:10px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:5px;border-left:2px solid rgba(255,255,255,.1)}
+.nbt-btns{display:flex;gap:6px;flex-wrap:wrap}
+.nbt-btn{padding:6px 12px;border-radius:5px;border:1px solid;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);background:transparent;transition:opacity .14s;display:flex;align-items:center;gap:5px}
+.nbt-btn:hover{opacity:.75}
+
+/* Stakeholder chips */
+.sh-chips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:7px}
+.sh-chip-card{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:8px;border:1px solid;cursor:pointer;transition:all .14s}
+.sh-chip-card:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.sh-chip-badge{font-size:18px;flex-shrink:0}
+.sh-chip-info{flex:1;min-width:0}
+.sh-chip-name{font-size:11px;font-weight:600;color:#fff;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-chip-meta{font-size:9px;color:var(--muted);font-family:var(--font-mono)}
+.sh-chip-check{font-size:10px;font-weight:700;flex-shrink:0}
+
+/* Touch timeline */
+.touch-timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border2);position:relative}
+.tl-item:last-child{border-bottom:none}
+.tl-line-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:28px}
+.tl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;border:1.5px solid}
+.tl-line{flex:1;width:1px;background:rgba(255,255,255,.06);margin-top:4px}
+.tl-content{flex:1}
+.tl-type{font-size:11px;font-weight:600;color:#fff;margin-bottom:1px}
+.tl-sh{font-size:10px;color:var(--muted)}
+.tl-date{font-size:9px;color:rgba(255,255,255,.28);font-family:var(--font-mono);white-space:nowrap;flex-shrink:0;margin-top:2px}
+.tl-notes{font-size:10px;color:rgba(255,255,255,.45);margin-top:4px;line-height:1.5;padding:5px 8px;background:rgba(255,255,255,.03);border-radius:4px}
+
+/* Staleness / days counter */
+.days-badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;font-family:var(--font-mono)}
+.days-stale{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.18)}
+.days-warn{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.18)}
+.days-ok{background:rgba(34,197,94,.08);color:var(--green);border:1px solid rgba(34,197,94,.15)}
+.days-never{background:rgba(255,255,255,.05);color:rgba(255,255,255,.28);border:1px solid rgba(255,255,255,.07)}
+
+/* Readiness bar inside account */
+.readiness-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:3px}
+.readiness-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.readiness-summary{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+
+/* ── PLAYBOOK TAB ── */
+.pw-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:700px){.pw-selector{grid-template-columns:1fr}}
+.pw-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 16px;cursor:pointer;transition:all .18s;text-align:center;position:relative;overflow:hidden}
+.pw-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .18s}
+.pw-card:hover::before{opacity:1}
+.pw-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.pw-card.sel{border-width:2px}
+.pw-icon{font-size:30px;margin-bottom:8px}
+.pw-label{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.1px}
+.pw-desc{font-size:10px;color:var(--muted);line-height:1.55;margin-bottom:10px}
+.pw-counts{display:flex;justify-content:center;gap:7px}
+.pw-count{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--muted2);font-family:var(--font-mono)}
+.back-btn{padding:6px 13px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--font);transition:all .14s}
+.back-btn:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+.seg-row{display:flex;gap:6px;margin-bottom:14px}
+.seg-btn{padding:6px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;color:var(--muted2);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s}
+.seg-btn.active{color:#fff;border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.1)}
+.cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px;margin-bottom:20px}
+.cp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.cp-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r) var(--r) 0 0;opacity:0;transition:opacity .15s}
+.cp-card:hover::after{opacity:1}
+.cp-card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.cp-badge{font-size:20px;margin-bottom:6px}
+.cp-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;letter-spacing:-.1px}
+.cp-role{font-size:8px;letter-spacing:.8px;font-weight:700;padding:2px 6px;border-radius:3px;display:inline-block;font-family:var(--font-mono)}
+.cp-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.cp-tag{font-size:9px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);color:var(--muted2)}
+.champion-flag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;background:rgba(200,205,212,.08);color:var(--silver-dim)}
+
+/* Touch accordion */
+.touch-exp{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden;transition:border-color .14s}
+.touch-exp:hover{border-color:rgba(255,255,255,.12)}
+.touch-hdr{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;transition:background .12s}
+.touch-hdr:hover{background:rgba(255,255,255,.03)}
+.touch-day-badge{min-width:42px;height:42px;border-radius:50%;border:1.5px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;background:rgba(0,0,0,.2)}
+.touch-day-num{font-size:8px;font-weight:700;letter-spacing:.3px;font-family:var(--font-mono)}
+.touch-day-lbl{font-size:7px;opacity:.55;font-family:var(--font-mono)}
+.touch-title-block{flex:1;min-width:0}
+.touch-type-label{font-size:13px;font-weight:600;color:#fff;margin-bottom:1px;letter-spacing:-.1px}
+.touch-preview{font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.touch-arrow{font-size:10px;color:rgba(255,255,255,.18);transition:transform .15s;flex-shrink:0}
+.touch-arrow.open{transform:rotate(90deg);color:rgba(255,255,255,.5)}
+.touch-body-exp{max-height:0;overflow:hidden;transition:max-height .28s ease}
+.touch-body-exp.open{max-height:700px}
+.touch-action-txt{font-size:12px;color:rgba(255,255,255,.72);line-height:1.75;padding:14px 16px;background:rgba(255,255,255,.025);border-left:3px solid;margin:0}
+.touch-key-ask{font-size:11px;color:rgba(255,255,255,.45);font-style:italic;padding:8px 16px;background:rgba(255,255,255,.02);border-left:3px solid rgba(255,255,255,.06)}
+.touch-atts{padding:6px 16px;display:flex;gap:5px;flex-wrap:wrap}
+.att-pill{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(200,205,212,.08);border:1px solid rgba(200,205,212,.14);color:var(--silver-dim);font-family:var(--font-mono)}
+.touch-acts-row{display:flex;gap:7px;flex-wrap:wrap;padding:10px 16px 13px}
+.touch-action-btn{display:flex;align-items:center;gap:5px;padding:6px 13px;border-radius:var(--r-sm);border:1.5px solid;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s;background:transparent}
+.touch-action-btn:hover{filter:brightness(1.2)}
+.sched-btn-plain{padding:6px 13px;border-radius:var(--r-sm);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.55);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s;display:flex;align-items:center;gap:5px}
+.sched-btn-plain:hover{background:rgba(255,255,255,.09);color:#fff}
+
+/* ── CALENDAR ── */
+.cal-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+@media(max-width:900px){.cal-layout{grid-template-columns:1fr}}
+.cal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;min-height:540px;display:flex;flex-direction:column}
+.cal-toolbar{padding:11px 14px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.cal-toolbar-title{font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:7px}
+.cal-week-strip{display:flex;border-bottom:1px solid var(--border2)}
+.cal-week-day{flex:1;padding:8px 4px;text-align:center;cursor:pointer;transition:background .1s;border-right:1px solid var(--border2)}
+.cal-week-day:last-child{border-right:none}
+.cal-week-day:hover{background:rgba(255,255,255,.03)}
+.cal-week-day.today{background:rgba(154,63,121,.07)}
+.cal-week-day-name{font-size:7px;letter-spacing:1px;color:var(--muted2);font-weight:600;margin-bottom:2px;font-family:var(--font-mono)}
+.cal-week-day-num{font-size:13px;font-weight:700;color:rgba(255,255,255,.6)}
+.cal-week-day.today .cal-week-day-num{color:var(--mid-lite)}
+.cal-week-dot{width:4px;height:4px;border-radius:2px;margin:3px auto 0;background:var(--mid);opacity:0}
+.cal-week-day.has-events .cal-week-dot{opacity:1}
+.cal-events{padding:0;overflow-y:auto;flex:1}
+.cal-date-header{padding:7px 14px 5px;font-size:8px;letter-spacing:2px;font-weight:600;color:var(--muted2);background:rgba(255,255,255,.02);border-bottom:1px solid var(--border2);position:sticky;top:0;z-index:2;font-family:var(--font-mono)}
+.cal-date-header.today{color:var(--mid-lite);background:rgba(154,63,121,.05)}
+.cal-event{display:flex;align-items:stretch;padding:0 0 0 12px;border-bottom:1px solid var(--border2);cursor:pointer;transition:background .1s;min-height:46px}
+.cal-event:hover{background:rgba(255,255,255,.025)}
+.cal-event-bar{width:3px;border-radius:2px;flex-shrink:0;margin:7px 11px 7px 0;align-self:stretch}
+.cal-event-body{flex:1;padding:9px 12px 9px 0;display:flex;flex-direction:column;justify-content:center}
+.cal-event-title{font-size:12px;font-weight:600;color:#fff;margin-bottom:2px;line-height:1.3}
+.cal-event-title.vena{color:var(--mid-lite)}
+.cal-event-meta{font-size:10px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cal-vena-badge{font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(154,63,121,.15);color:var(--mid-lite);font-weight:600;flex-shrink:0}
+.cal-signin{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;text-align:center}
+.cal-signin-btn{padding:10px 22px;background:#4285f4;border:none;border-radius:7px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:8px;transition:opacity .14s}
+.cal-signin-btn:hover{opacity:.88}
+
+/* Quick schedule */
+.quick-sched{background:rgba(95,23,67,.1);border:1px solid rgba(154,63,121,.18);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:16px}
+.qs-title{font-size:9px;letter-spacing:2px;color:rgba(154,63,121,.7);font-weight:600;margin-bottom:10px;font-family:var(--font-mono)}
+.qs-row{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-end}
+.qs-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:100px}
+.qs-label{font-size:9px;letter-spacing:1px;color:var(--muted2);font-family:var(--font-mono)}
+.qs-inp{background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:5px;padding:6px 9px;color:#fff;font-size:11px;font-family:var(--font);outline:none;width:100%;transition:border-color .14s}
+.qs-inp:focus{border-color:var(--mid)}
+.qs-sel{background:#1e1825;border:1px solid var(--border);border-radius:5px;padding:6px 9px;color:#fff;font-size:11px;font-family:var(--font);outline:none;width:100%}
+.qs-go{padding:7px 16px;background:var(--mid);border:none;border-radius:5px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap;align-self:flex-end;transition:opacity .14s}
+.qs-go:hover{opacity:.85}
+
+/* Activity log */
+.activity-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;display:flex;flex-direction:column}
+.activity-feed{padding:8px;overflow-y:auto;max-height:500px}
+.activity-item{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-left:2px solid;border-radius:7px;padding:9px 11px;margin-bottom:6px;transition:background .1s}
+.activity-item:hover{background:rgba(255,255,255,.05)}
+.ai-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:3px}
+.ai-subject{font-size:11px;font-weight:600;color:#fff;flex:1;line-height:1.3}
+.ai-type{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;flex-shrink:0;letter-spacing:.4px;font-family:var(--font-mono)}
+.ai-meta{font-size:10px;color:var(--muted)}
+.ai-account{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px}
+.activity-empty{padding:32px;text-align:center;color:rgba(255,255,255,.16);font-size:12px;line-height:1.7}
+.ref-btn{padding:4px 9px;border-radius:4px;font-size:9px;font-weight:600;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.4);cursor:pointer;font-family:var(--font);transition:all .13s}
+.ref-btn:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+
+/* ── HEALTH ── */
+.health-grid{display:grid;grid-template-columns:280px 1fr;gap:16px;align-items:start;margin-bottom:18px}
+@media(max-width:900px){.health-grid{grid-template-columns:1fr}}
+.gauge-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px 16px;text-align:center;position:relative;overflow:hidden}
+.gauge-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r-lg) var(--r-lg) 0 0;background:linear-gradient(90deg,var(--deep),var(--mid))}
+.pts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:7px}
+.pts-card{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:8px;padding:11px}
+.pts-val{font-size:20px;font-weight:700;font-family:var(--font-mono)}
+.pts-label{font-size:8px;letter-spacing:1.5px;color:var(--muted2);font-weight:600;margin-top:2px;text-transform:uppercase;font-family:var(--font-mono)}
+.pts-sub{font-size:10px;color:rgba(255,255,255,.28);margin-top:3px}
+.sh-prog-card{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:8px;padding:10px;transition:border-color .14s}
+.sh-prog-card.activated{border-color:rgba(34,197,94,.18);background:rgba(34,197,94,.04)}
+.sh-prog-name{font-size:11px;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sh-prog-bar-bg{height:4px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:3px}
+.sh-prog-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.sh-prog-meta{font-size:10px;color:var(--muted);display:flex;justify-content:space-between;font-family:var(--font-mono)}
+.threshold-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--border2)}
+.threshold-row:last-child{border-bottom:none}
+.threshold-pip{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.health-act-row{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--border2)}
+.health-act-row:last-child{border-bottom:none}
+.health-act-pts{font-size:11px;font-weight:700;min-width:32px;text-align:right;flex-shrink:0;font-family:var(--font-mono)}
+.territory-alert{padding:10px 15px;border-radius:9px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:10px;margin-bottom:16px;line-height:1.55}
+.territory-alert button{background:none;border:none;cursor:pointer;font-weight:700;text-decoration:underline;font-family:var(--font);font-size:11px}
+#tab-health.warn{animation:pulse-warn 2s infinite}
+
+/* ── MANAGER ── */
+.mgr-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:14px}
+.mgr-sec-title{font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;text-transform:uppercase;font-family:var(--font-mono)}
+.mgr-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;background:rgba(255,255,255,.02);margin-bottom:5px;border:1px solid rgba(255,255,255,.04)}
+.mgr-row-label{font-size:12px;font-weight:500;color:rgba(255,255,255,.78);flex:1}
+.mgr-row-sub{font-size:9px;color:var(--muted2);margin-top:1px;font-family:var(--font-mono)}
+.mgr-pts-inp{width:66px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:5px 8px;color:#fff;font-size:12px;font-weight:700;font-family:var(--font-mono);text-align:center;outline:none}
+.mgr-pts-inp:focus{border-color:var(--mid)}
+.mgr-thresh-row{display:grid;grid-template-columns:130px 68px 68px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border2)}
+.mgr-thresh-row:last-child{border-bottom:none}
+.mgr-thresh-pip{width:10px;height:10px;border-radius:5px;flex-shrink:0}
+.mgr-inp{background:#1e1825;border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:5px 7px;color:#fff;font-size:11px;font-family:var(--font);outline:none;width:100%;transition:border-color .14s}
+.mgr-inp:focus{border-color:var(--mid)}
+.mgr-inp option,.fsel option,.qs-sel option{background:#1e1825;color:#fff}
+select option{background:#1e1825;color:#fff}
+.mgr-pts-inp{background:#1e1825;border:1px solid rgba(255,255,255,.1);border-radius:5px;padding:4px 7px;color:#fff;font-size:13px;font-family:var(--font-mono);outline:none;transition:border-color .14s}
+.mgr-pts-inp:focus{border-color:var(--mid)}
+.mgr-sh-row{display:grid;grid-template-columns:1fr 56px 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border2)}
+.mgr-sh-row:last-child{border-bottom:none}
+.mgr-save-btn{padding:8px 20px;background:var(--mid);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity .14s}
+.mgr-save-btn:hover{opacity:.85}
+.mgr-reset-btn{padding:8px 16px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:6px;color:rgba(255,255,255,.38);font-size:11px;cursor:pointer;font-family:var(--font);transition:all .14s}
+.mgr-reset-btn:hover{border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.6)}
+.mgr-live-score{font-size:32px;font-weight:700;line-height:1;font-family:var(--font-mono)}
+.mgr-team-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border2)}
+.mgr-rep-inp{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:5px;padding:5px 9px;color:#fff;font-size:11px;font-family:var(--font);outline:none;transition:border-color .14s}
+.mgr-rep-inp:focus{border-color:var(--mid)}
+
+/* ── IN-SERVICE / PROCTOR ── */
+.is-card{background:rgba(200,205,212,.05);border:1px solid rgba(200,205,212,.12);border-radius:9px;padding:12px 14px;margin-bottom:8px;transition:border-color .14s}
+.is-card:hover{border-color:rgba(200,205,212,.2)}
+
+/* ── IN-SERVICE STEP FLOW ── */
+.is-steps{display:flex;align-items:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.is-step{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid var(--border);transition:all .18s}
+.is-step.active{background:rgba(154,63,121,.12);border-color:rgba(154,63,121,.3)}
+.is-step.done{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2)}
+.is-step-num{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--font-mono);flex-shrink:0}
+.is-step.active .is-step-num{background:var(--mid);color:#fff}
+.is-step.done .is-step-num{background:var(--green);color:#fff}
+.is-step-label{font-size:11px;font-weight:600;color:var(--muted)}
+.is-step.active .is-step-label{color:#fff}
+.is-step.done .is-step-label{color:var(--green)}
+.is-step-arrow{font-size:12px;color:rgba(255,255,255,.18);flex-shrink:0}
+
+/* Stakeholder selection grid */
+.is-stakeholder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:9px}
+.is-sh-card{background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:11px}
+.is-sh-card:hover{border-color:rgba(255,255,255,.18);background:var(--card3);transform:translateY(-1px)}
+.is-sh-card.selected{border-width:2px}
+.is-sh-icon{font-size:22px;flex-shrink:0}
+.is-sh-info{flex:1;min-width:0}
+.is-sh-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px}
+.is-sh-dept{font-size:10px;color:var(--muted)}
+.is-sh-phase{font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:var(--font-mono);flex-shrink:0}
+
+/* Audience chips */
+.is-chip-group{display:flex;flex-direction:column;gap:5px}
+.is-chip{display:flex;align-items:center;gap:8px;padding:8px 11px;border-radius:7px;cursor:pointer;transition:all .13s;border:1px solid;user-select:none}
+.is-chip:hover{filter:brightness(1.1)}
+.is-chip.mandatory{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.2);color:rgba(255,255,255,.8)}
+.is-chip.mandatory.checked{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4)}
+.is-chip.recommended{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.18);color:rgba(255,255,255,.7)}
+.is-chip.recommended.checked{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.35)}
+.is-chip.optional{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07);color:rgba(255,255,255,.55)}
+.is-chip.optional.checked{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18)}
+.is-chip-check{width:16px;height:16px;border-radius:4px;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .13s;opacity:.5}
+.is-chip.checked .is-chip-check{opacity:1;background:currentColor;color:var(--dark)}
+.is-chip-name{font-size:11px;font-weight:600;flex:1}
+.is-chip-tag{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0;font-family:var(--font-mono);opacity:.7}
+
+/* ── IN-SERVICE TYPE CARDS ── */
+.is-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px}
+@media(max-width:900px){.is-type-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.is-type-grid{grid-template-columns:1fr}}
+.is-type-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:18px 16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.is-type-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--mid);opacity:0;transition:opacity .18s;border-radius:12px 12px 0 0}
+.is-type-card:hover{border-color:rgba(255,255,255,.2);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.is-type-card:hover::before{opacity:1}
+.is-type-card.selected{border-color:var(--mid);background:rgba(154,63,121,.1)}
+.is-type-card.selected::before{opacity:1}
+.is-type-icon{font-size:28px;margin-bottom:10px;display:block}
+.is-type-label{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;letter-spacing:-.1px}
+.is-type-desc{font-size:11px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:12px}
+.is-type-audience-preview{font-size:10px;font-weight:600;color:var(--mid-lite);background:rgba(154,63,121,.12);border:1px solid rgba(154,63,121,.2);border-radius:5px;padding:4px 9px;display:inline-block;font-family:var(--font-mono)}
+
+/* In-service contact card */
+.is-contact-section{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border2)}
+.is-contact-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.is-contact-label{font-size:9px;letter-spacing:1.5px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:6px;font-family:var(--font-mono)}
+.is-contact-person{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:7px;margin-bottom:5px;border:1px solid}
+.is-contact-person-icon{font-size:18px;flex-shrink:0}
+.is-contact-person-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px}
+.is-contact-person-role{font-size:10px;color:var(--muted)}
+.is-contact-action{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:1px solid;cursor:pointer;font-family:var(--font);background:transparent;transition:opacity .13px;white-space:nowrap;flex-shrink:0;margin-left:auto}
+.is-contact-action:hover{opacity:.75}
+.is-tip{padding:11px 13px;border-radius:8px;font-size:11px;color:rgba(255,255,255,.65);line-height:1.65;border:1px solid rgba(154,63,121,.2);background:rgba(154,63,121,.07)}
+.is-tip-label{font-size:8px;letter-spacing:1.5px;font-weight:700;color:rgba(154,63,121,.8);margin-bottom:5px;font-family:var(--font-mono)}
+.is-prereq{padding:11px 13px;border-radius:8px;font-size:11px;color:rgba(245,158,11,.85);line-height:1.65;border:1px solid rgba(245,158,11,.2);background:rgba(245,158,11,.06);margin-top:10px}
+.is-prereq-label{font-size:8px;letter-spacing:1.5px;font-weight:700;color:var(--amber);margin-bottom:5px;font-family:var(--font-mono)}
+
+/* Audience chip (simplified) */
+.is-aud-chip{display:flex;align-items:center;gap:8px;padding:7px 11px;border-radius:7px;cursor:pointer;border:1px solid;margin-bottom:5px;transition:all .13s;user-select:none}
+.is-aud-chip.on{opacity:1}
+.is-aud-chip.off{opacity:.4}
+.is-aud-chip:hover{opacity:1}
+.is-aud-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.is-aud-name{font-size:12px;font-weight:600;color:#fff;flex:1}
+.is-aud-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:var(--font-mono);flex-shrink:0}
+.pr-card{background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.15);border-radius:8px;padding:11px 14px;margin-bottom:7px}
+
+/* ── PROCTOR REDESIGN ── */
+.pr-pathway-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.pr-pw-btn{padding:8px 18px;border-radius:7px;border:1.5px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s}
+.pr-pw-btn:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.pr-pw-btn.active{background:rgba(154,63,121,.12);border-color:rgba(154,63,121,.4);color:#fff}
+
+/* Physician accordion card */
+.pr-phys-card{background:var(--card);border:1.5px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .15s}
+.pr-phys-card.open{border-color:rgba(154,63,121,.35)}
+.pr-phys-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;transition:background .12s;user-select:none}
+.pr-phys-header:hover{background:rgba(255,255,255,.03)}
+.pr-phys-icon{font-size:22px;flex-shrink:0}
+.pr-phys-info{flex:1}
+.pr-phys-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px}
+.pr-phys-role{font-size:10px;color:var(--muted)}
+.pr-phys-note{font-size:11px;color:rgba(255,255,255,.5);line-height:1.6;font-style:italic}
+.pr-phys-arrow{font-size:11px;color:rgba(255,255,255,.25);transition:transform .15s;flex-shrink:0}
+.pr-phys-card.open .pr-phys-arrow{transform:rotate(90deg);color:var(--mid-lite)}
+.pr-phys-expand{display:none;padding:0 18px 18px}
+.pr-phys-card.open .pr-phys-expand{display:block;animation:fadeIn .15s ease}
+
+/* Form inside accordion */
+.pr-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:640px){.pr-form-grid{grid-template-columns:1fr}}
+.pr-submit-btn{padding:9px 20px;background:var(--mid);border:none;border-radius:7px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity .14s;display:flex;align-items:center;gap:8px}
+.pr-submit-btn:hover{opacity:.85}
+.pr-ideal-proctor{padding:10px 13px;background:rgba(154,63,121,.08);border:1px solid rgba(154,63,121,.2);border-radius:7px;margin-bottom:14px}
+.pr-ideal-label{font-size:8px;letter-spacing:1.5px;font-weight:700;color:rgba(154,63,121,.8);margin-bottom:4px;font-family:var(--font-mono)}
+.pr-ideal-text{font-size:11px;color:rgba(255,255,255,.65);line-height:1.6}
+.confirm-panel{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:12px}
+.confirm-title{font-size:9px;letter-spacing:2px;font-weight:600;color:var(--silver-dim);margin-bottom:10px;font-family:var(--font-mono)}
+.action-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border2)}
+.action-row:last-child{border-bottom:none}
+.action-icon{font-size:17px;width:24px;text-align:center;flex-shrink:0}
+.action-label{font-size:12px;font-weight:600;color:#fff;margin-bottom:1px}
+.action-detail{font-size:10px;color:var(--muted);line-height:1.35}
+.ago-btn{padding:5px 10px;border-radius:4px;font-size:9px;font-weight:600;cursor:pointer;font-family:var(--font);border:1px solid;transition:opacity .14s;white-space:nowrap;flex-shrink:0}
+.ago-btn:hover{opacity:.8}
+
+/* ── MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-ov.open{display:flex;animation:fadeIn .15s ease}
+.modal{background:#17141a;border-radius:14px;padding:24px;width:100%;max-width:520px;box-shadow:0 28px 80px rgba(0,0,0,.8);border:1px solid;max-height:88vh;overflow-y:auto}
+.modal-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.2px}
+.modal-sub{font-size:11px;color:var(--muted);margin-bottom:16px}
+.fld{margin-bottom:11px}
+.flbl{font-size:9px;letter-spacing:1.5px;color:var(--muted2);margin-bottom:4px;display:block;font-family:var(--font-mono);text-transform:uppercase}
+.finp{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 11px;color:#fff;font-size:12px;font-family:var(--font);outline:none;transition:all .15s}
+.finp:focus{border-color:var(--mid);background:rgba(255,255,255,.08)}
+.finp::placeholder{color:rgba(255,255,255,.16)}
+.fsel{width:100%;background:#1e1825;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px 11px;color:#fff;font-size:12px;font-family:var(--font);outline:none}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.btn{padding:8px 18px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);border:none;transition:all .15s;letter-spacing:.1px}
+.btn:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:8px 14px}
+.btn-ghost:hover{filter:none;border-color:rgba(255,255,255,.28);color:#fff}
+.type-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.type-chip{padding:5px 10px;font-size:11px;border-radius:5px;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:var(--font);background:transparent;color:rgba(255,255,255,.38);transition:all .12s}
+.type-chip.sel{color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1)}
+.att-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.att-chip{padding:5px 10px;font-size:11px;border-radius:5px;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:var(--font);background:rgba(255,255,255,.04);color:rgba(255,255,255,.38);transition:all .12s}
+.att-chip.sel{background:rgba(200,205,212,.12);color:var(--silver);border-color:rgba(200,205,212,.3)}
+
+/* ── GLOBAL SEARCH ── */
+.search-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;align-items:flex-start;justify-content:center;padding-top:80px;backdrop-filter:blur(6px)}
+.search-overlay.open{display:flex;animation:fadeIn .12s ease}
+.search-box{background:#1a1622;border:1px solid rgba(154,63,121,.35);border-radius:14px;width:100%;max-width:560px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.8)}
+.search-inp-wrap{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.search-icon{font-size:16px;opacity:.4;flex-shrink:0}
+.search-inp{flex:1;background:transparent;border:none;color:#fff;font-size:15px;font-family:var(--font);outline:none}
+.search-inp::placeholder{color:rgba(255,255,255,.2)}
+.search-kbd{font-size:10px;padding:2px 7px;border-radius:4px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.12);flex-shrink:0;font-family:var(--font-mono)}
+.search-results{max-height:400px;overflow-y:auto}
+.search-section-label{font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.25);padding:10px 18px 5px;font-family:var(--font-mono);text-transform:uppercase}
+.search-result{display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer;transition:background .1s;border-bottom:1px solid rgba(255,255,255,.03)}
+.search-result:hover,.search-result.focused{background:rgba(154,63,121,.1)}
+.search-result:last-child{border-bottom:none}
+.sr-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center}
+.sr-content{flex:1;min-width:0}
+.sr-label{font-size:13px;font-weight:600;color:#fff;margin-bottom:1px}
+.sr-meta{font-size:10px;color:var(--muted)}
+.sr-badge{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600;flex-shrink:0;font-family:var(--font-mono)}
+.search-empty{padding:30px;text-align:center;color:rgba(255,255,255,.2);font-size:12px}
+.search-hint{padding:10px 18px;font-size:10px;color:rgba(255,255,255,.2);border-top:1px solid rgba(255,255,255,.06);display:flex;gap:14px;flex-wrap:wrap}
+.search-hint kbd{font-family:var(--font-mono);font-size:9px;padding:2px 5px;border-radius:3px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:20px;padding:11px 16px;border-radius:9px;font-size:12px;font-weight:600;box-shadow:var(--shadow-lg);z-index:400;display:none;color:#fff;max-width:320px;line-height:1.4}
+.toast.show{display:flex;align-items:center;gap:8px;animation:fadeUp .2s ease}
+.toast-close{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:14px;margin-left:6px;flex-shrink:0;padding:0;transition:color .14s}
+.toast-close:hover{color:#fff}
+
+/* ── CALL PREP CARD ── */
+.call-prep-card{background:linear-gradient(135deg,rgba(95,23,67,.15),rgba(154,63,121,.08));border:1px solid rgba(154,63,121,.25);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.cp-section{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.cp-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.cp-sec-label{font-size:8px;letter-spacing:2px;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:6px;font-family:var(--font-mono)}
+.cp-sec-text{font-size:12px;color:rgba(255,255,255,.75);line-height:1.7}
+.cp-metrics{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.cp-metric{font-size:10px;padding:3px 9px;border-radius:4px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-family:var(--font-mono)}
+.cp-watchout{padding:10px 13px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:7px;font-size:11px;color:rgba(255,255,255,.7);line-height:1.65}
+
+/* Win probability */
+.win-prob-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;border:1px solid;transition:opacity .14s}
+.win-prob-pill:hover{opacity:.8}
+.wp-cold{background:rgba(99,102,241,.1);color:#818cf8;border-color:rgba(99,102,241,.25)}
+.wp-engaged{background:rgba(59,130,246,.1);color:#60a5fa;border-color:rgba(59,130,246,.25)}
+.wp-champion{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.25)}
+.wp-vac{background:rgba(249,115,22,.1);color:#fb923c;border-color:rgba(249,115,22,.25)}
+.wp-closing{background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.25)}
+
+/* Contacts */
+.contact-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:flex-start;gap:10px}
+.contact-avatar{width:32px;height:32px;border-radius:50%;background:var(--mid);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.contact-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px}
+.contact-title{font-size:10px;color:var(--muted);margin-bottom:4px}
+.contact-actions{display:flex;gap:5px;flex-wrap:wrap}
+.contact-action-btn{font-size:9px;padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.45);cursor:pointer;font-family:var(--font);transition:all .13s}
+.contact-action-btn:hover{border-color:rgba(255,255,255,.25);color:#fff}
+.contacts-sh-group{margin-bottom:14px}
+.contacts-sh-label{font-size:9px;letter-spacing:1.5px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;font-family:var(--font-mono)}
+.add-contact-btn-sm{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(154,63,121,.15);border:1px solid rgba(154,63,121,.3);color:var(--mid-lite);cursor:pointer;font-family:var(--font);transition:opacity .13s}
+.add-contact-btn-sm:hover{opacity:.8}
+
+/* Objections */
+.objection-card{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.18);border-radius:8px;padding:11px 13px;margin-bottom:7px}
+.obj-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:8px}
+.obj-type{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(239,68,68,.15);color:var(--red);letter-spacing:.4px;font-family:var(--font-mono)}
+.obj-date{font-size:9px;color:rgba(255,255,255,.3);font-family:var(--font-mono)}
+.obj-resolved{background:rgba(34,197,94,.12);color:var(--green);border-color:rgba(34,197,94,.2)}
+.obj-text{font-size:11px;color:rgba(255,255,255,.7);line-height:1.6;margin-bottom:5px}
+.obj-response{font-size:10px;color:rgba(255,255,255,.45);font-style:italic;line-height:1.55;padding:5px 9px;background:rgba(255,255,255,.03);border-radius:4px;border-left:2px solid rgba(255,255,255,.08)}
+.obj-resolve-btn{font-size:9px;padding:2px 8px;border-radius:4px;border:1px solid rgba(34,197,94,.3);background:rgba(34,197,94,.08);color:var(--green);cursor:pointer;font-family:var(--font);transition:opacity .13px}
+
+/* Pipeline card probability dot */
+.prob-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;display:inline-block}
+
+/* Case volume badge */
+.case-vol-badge{font-size:9px;font-weight:600;font-family:var(--font-mono);color:rgba(255,255,255,.4);background:rgba(255,255,255,.05);padding:2px 7px;border-radius:4px;border:1px solid rgba(255,255,255,.07)}
+
+/* Next action date */
+.next-action-date{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:5px;font-family:var(--font-mono)}
+.nad-overdue{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.nad-today{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.nad-upcoming{background:rgba(34,197,94,.07);color:var(--green);border:1px solid rgba(34,197,94,.15)}
+.nad-none{background:rgba(255,255,255,.04);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.07)}
+
+/* Account quick-edit strip */
+.acct-edit-strip{display:flex;gap:7px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:8px;margin-bottom:14px}
+.acct-edit-field{display:flex;align-items:center;gap:6px;flex:1;min-width:100px}
+.acct-edit-label{font-size:9px;color:rgba(255,255,255,.3);white-space:nowrap;font-family:var(--font-mono)}
+.acct-edit-inp{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:4px 8px;color:#fff;font-size:11px;font-family:var(--font);outline:none;flex:1;min-width:80px;transition:border-color .14s}
+.acct-edit-inp:focus{border-color:var(--mid)}
+.acct-edit-save{padding:5px 12px;background:var(--mid);border:none;border-radius:4px;color:#fff;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);white-space:nowrap}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .header{padding:12px 16px 0}
+  .content{padding:16px}
+  .cred-bar{padding:6px 16px}
+  .pipeline-board{flex-direction:column}
+  .pipeline-col{flex:none;width:100%}
+}
+
+/* ── CS Playbook scoped styles ── */
+.pb-wrap { display:flex; height:calc(100vh - 90px); overflow:hidden; }
+.pb-wrap #main { flex:1; overflow-y:auto; }
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --deep:#5f1743; --mid:#9a3f79; --mid-lite:#b05490;
+  --dark:#0f0c10; --dark2:#131014;
+  --card:#1c1820; --card2:#221e26; --card3:#282330;
+  --off:#F0ECF0; --silver:#C8CDD4; --silver-dim:#8a8f96;
+  --muted:rgba(255,255,255,.38); --muted2:rgba(255,255,255,.22);
+  --border:rgba(255,255,255,.07); --border2:rgba(255,255,255,.04);
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#3b82f6;
+  --r:10px;--r-sm:6px;--r-lg:14px;
+  --font:'DM Sans',system-ui,sans-serif;
+  --font-mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+
+.pb-wrap{background:var(--dark);color:var(--off);font-family:var(--font);min-height:100vh;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;display:flex}
+::selection{background:rgba(154,63,121,.35);color:#fff}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SIDEBAR ── */
+#sidebar{width:240px;min-width:240px;background:#0a080b;border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;z-index:100}
+.sb-logo{padding:22px 20px 16px;border-bottom:1px solid var(--border)}
+.sb-eyebrow{font-size:8px;letter-spacing:3.5px;color:rgba(200,205,212,.28);font-weight:600;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:3px}
+.sb-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.2px}
+.sb-sub{font-size:10px;color:rgba(255,255,255,.25);margin-top:2px}
+.sb-section{font-size:8px;letter-spacing:2.5px;color:rgba(255,255,255,.2);font-weight:700;text-transform:uppercase;font-family:var(--font-mono);padding:18px 20px 6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 20px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;text-decoration:none}
+.nav-item:hover{background:rgba(255,255,255,.04)}
+.nav-item.active{background:rgba(95,23,67,.2);border-left-color:var(--mid)}
+.nav-num{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(200,205,212,.5);flex-shrink:0;font-family:var(--font-mono)}
+.nav-item.active .nav-num{background:var(--mid);color:#fff}
+.nav-text{font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.3}
+.nav-item.active .nav-text{color:#fff;font-weight:600}
+.sb-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);font-size:9px;color:rgba(255,255,255,.2);font-family:var(--font-mono)}
+
+/* ── MAIN ── */
+#main{flex:1;overflow-y:auto}
+.page{display:none}.page.active{display:block;animation:fadeIn .18s ease}
+
+/* ── PAGE HERO ── */
+.page-hero{background:linear-gradient(170deg,#1a0612 0%,#2d0a20 30%,var(--deep) 60%,#3a1030 100%);padding:40px 44px 32px;position:relative;overflow:hidden;border-bottom:1px solid rgba(200,205,212,.1)}
+.page-hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,205,212,.15),transparent)}
+.page-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(200,205,212,.07)}
+.ph-eyebrow{font-size:8px;letter-spacing:3px;color:rgba(200,205,212,.38);font-weight:600;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ph-eyebrow::before{content:'';width:24px;height:2px;background:linear-gradient(90deg,var(--mid),transparent)}
+.ph-title{font-size:30px;font-weight:700;color:#fff;letter-spacing:-.4px;line-height:1.2;margin-bottom:8px;position:relative;z-index:1}
+.ph-sub{font-size:13px;color:rgba(255,255,255,.45);font-style:italic;margin-bottom:14px;position:relative;z-index:1}
+.ph-badges{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+
+/* ── CONTENT ── */
+.pg-content{padding:32px 44px 56px}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:10px;font-size:9px;font-weight:600;letter-spacing:.4px;white-space:nowrap}
+.pill-purple{background:rgba(154,63,121,.15);color:var(--mid-lite);border:1px solid rgba(154,63,121,.25)}
+.pill-green{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.18)}
+.pill-amber{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.18)}
+.pill-red{background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.16)}
+.pill-dim{background:rgba(255,255,255,.05);color:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.08)}
+.pill-silver{background:rgba(200,205,212,.08);color:var(--silver-dim);border:1px solid rgba(200,205,212,.14)}
+
+/* Section */
+.section-title{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.3px;margin-bottom:4px}
+.section-sub{font-size:12px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.sec-label{font-size:8px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.28);text-transform:uppercase;font-family:var(--font-mono);margin-bottom:10px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg)}
+.card-.pb-wrap{padding:18px}
+.card-hdr{padding:13px 18px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-hdr-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-family:var(--font-mono)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Checklist */
+.checklist{display:flex;flex-direction:column;gap:8px}
+.chk-item{display:flex;align-items:flex-start;gap:9px;padding:8px 11px;border-radius:7px;background:rgba(255,255,255,.02);border:1px solid var(--border2);font-size:12.5px;color:var(--muted);line-height:1.5}
+.chk-icon{flex-shrink:0;font-size:11px;margin-top:2px}
+
+/* Steps */
+.steps{display:flex;flex-direction:column;gap:10px}
+.step-item{display:flex;gap:14px;align-items:flex-start;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.step-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* Timeline */
+.timeline{display:flex;align-items:flex-start;gap:0;margin-bottom:28px;overflow-x:auto;padding-bottom:4px;position:relative}
+.timeline::before{content:'';position:absolute;top:16px;left:calc(12.5%);right:calc(12.5%);height:1px;background:rgba(255,255,255,.06);z-index:0}
+.tl-item{display:flex;flex-direction:column;align-items:center;flex:1;min-width:80px;text-align:center;position:relative;z-index:1}
+.tl-dot{width:32px;height:32px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:13px;margin-bottom:7px;background:var(--dark2)}
+.tl-phase{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:var(--font-mono)}
+.tl-period{font-size:9px;color:var(--muted);margin-top:2px}
+
+/* Callout */
+.callout{border-radius:var(--r);padding:14px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:18px;border-left:3px solid}
+.callout.green{background:rgba(34,197,94,.06);border-left-color:var(--green)}
+.callout.amber{background:rgba(245,158,11,.06);border-left-color:var(--amber)}
+.callout.red{background:rgba(239,68,68,.06);border-left-color:var(--red)}
+.callout.purple{background:rgba(154,63,121,.08);border-left-color:var(--mid)}
+.callout.silver{background:rgba(200,205,212,.04);border-left-color:rgba(200,205,212,.25)}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.callout-text{font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.65)}
+.callout-text strong{color:#fff;font-weight:600;display:block;margin-bottom:2px}
+
+/* Divider */
+.divider{height:1px;background:var(--border2);margin:24px 0}
+
+/* Expansion rows */
+.exp-row{display:flex;gap:0;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px}
+.exp-from{min-width:155px;padding:12px 16px;font-size:12px;font-weight:700;color:#fff;background:rgba(154,63,121,.15);border-right:1px solid var(--border);display:flex;align-items:center}
+.exp-arrow{padding:12px 10px;font-size:14px;color:rgba(200,205,212,.25);background:rgba(255,255,255,.02);border-right:1px solid var(--border);display:flex;align-items:center;flex-shrink:0}
+.exp-to{min-width:155px;padding:12px 16px;font-size:12px;font-weight:700;color:var(--mid-lite);border-right:1px solid var(--border);display:flex;align-items:center}
+.exp-desc{padding:12px 16px;font-size:12px;color:var(--muted);line-height:1.5;display:flex;align-items:center}
+
+/* Workflow cards */
+.wf-card{background:var(--card);border:1px solid var(--border);border-left:3px solid;border-radius:var(--r);padding:16px 18px;margin-bottom:10px}
+.wf-id{font-size:9px;font-weight:700;letter-spacing:2px;font-family:var(--font-mono);margin-bottom:3px}
+.wf-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px}
+.wf-trigger{font-size:11px;color:var(--mid-lite);font-style:italic;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border2)}
+.wf-action{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--muted);padding:3px 0}
+.wf-action::before{content:'→';color:var(--mid-lite);font-weight:700;flex-shrink:0;font-size:11px;margin-top:1px}
+
+/* Email templates */
+.email-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.ec-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:background .12s;user-select:none}
+.ec-hdr:hover{background:rgba(255,255,255,.03)}
+.ec-id{font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--mid-lite);font-family:var(--font-mono);flex-shrink:0}
+.ec-name{font-size:13px;font-weight:600;color:#fff;flex:1}
+.ec-trigger{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted2);white-space:nowrap;flex-shrink:0;font-family:var(--font-mono)}
+.ec-arrow{font-size:10px;color:rgba(255,255,255,.18);transition:transform .15s;flex-shrink:0}
+.ec-arrow.open{transform:rotate(90deg);color:rgba(255,255,255,.5)}
+.ec-.pb-wrap{max-height:0;overflow:hidden;transition:max-height .28s ease}
+.ec-body.open{max-height:500px}
+.ec-body-inner{padding:14px 16px;border-top:1px solid var(--border2)}
+.ec-subject{font-size:11.5px;font-weight:600;color:#fff;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border2)}
+.ec-preview{font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.75;white-space:pre-line;background:rgba(255,255,255,.02);border-radius:6px;padding:12px;border:1px solid var(--border2)}
+
+/* Field table */
+.field-table{width:100%;border-collapse:collapse}
+.field-table th{text-align:left;padding:9px 12px;font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,.25);font-weight:700;text-transform:uppercase;font-family:var(--font-mono);border-bottom:1px solid var(--border2);background:rgba(255,255,255,.02)}
+.field-table td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--border2);color:var(--muted);vertical-align:top}
+.field-table tr:last-child td{border-bottom:none}
+.field-table tr:hover td{background:rgba(255,255,255,.015)}
+.ft-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:rgba(154,63,121,.1);color:var(--mid-lite);border:1px solid rgba(154,63,121,.18);font-family:var(--font-mono)}
+
+/* Mod tabs */
+.mod-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.mod-tab{padding:5px 14px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted2);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .13s}
+.mod-tab.active{background:rgba(154,63,121,.15);border-color:rgba(154,63,121,.3);color:var(--mid-lite)}
+
+/* Tier cards */
+.tier-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:22px}
+@media(max-width:900px){.tier-grid{grid-template-columns:1fr}}
+.tier-card{background:var(--card2);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.tier-hdr{padding:18px;position:relative;overflow:hidden}
+.tier-num{font-size:8px;letter-spacing:2.5px;font-weight:700;opacity:.6;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:4px}
+.tier-name{font-size:18px;font-weight:700;color:#fff}
+.tier-.pb-wrap{padding:16px}
+.tier-sec{font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,.25);font-weight:700;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:7px;margin-top:14px}
+.tier-sec:first-child{margin-top:0}
+.tier-req{display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--muted);padding:4px 0;line-height:1.5}
+.tier-divider{height:1px;background:var(--border);margin:12px 0}
+
+/* Cover page */
+.cover-page{background:linear-gradient(170deg,#1a0612 0%,#2d0a20 30%,var(--deep) 60%,#3a1030 100%);min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:60px 48px;position:relative;overflow:hidden}
+.cover-page::before{content:'';position:absolute;right:-80px;top:-80px;width:400px;height:400px;border-radius:50%;border:1px solid rgba(200,205,212,.07)}
+.cover-page::after{content:'';position:absolute;right:60px;bottom:80px;width:200px;height:200px;border-radius:50%;background:rgba(95,23,67,.12)}
+.cv-bar{width:3px;height:48px;background:linear-gradient(180deg,var(--silver),rgba(200,205,212,.1));border-radius:2px;margin-bottom:22px}
+.cv-eyebrow{font-size:9px;letter-spacing:4px;color:rgba(200,205,212,.35);font-weight:600;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:10px}
+.cv-title{font-size:52px;font-weight:700;color:#fff;line-height:1.08;letter-spacing:-.6px;max-width:560px;position:relative;z-index:1}
+.cv-title span{color:var(--mid-lite)}
+.cv-sub{font-size:17px;color:rgba(255,255,255,.45);margin-top:16px;max-width:500px;font-weight:300;line-height:1.55;position:relative;z-index:1}
+.cv-badges{margin-top:28px;display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+.cv-hint{margin-top:52px;font-size:11px;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:8px;position:relative;z-index:1;font-family:var(--font-mono)}
+.cv-hint span{width:28px;height:1px;background:rgba(255,255,255,.15);display:inline-block}
+
+/* P3.3 MOBILE */
+@media(max-width:768px){
+  .tab-bar{display:none !important;}
+  .cred-inputs-group{display:none;}
+  #mobile-bottom-nav{display:flex !important;}
+  .today-grid{grid-template-columns:1fr !important;}
+  .pipeline-board{overflow-x:auto;scroll-snap-type:x mandatory;display:flex !important;gap:10px;padding-bottom:10px;}
+  .pipeline-col{min-width:85vw !important;max-width:85vw !important;scroll-snap-align:start;flex-shrink:0;}
+  .accounts-layout{grid-template-columns:1fr !important;}
+  .health-grid{grid-template-columns:1fr !important;}
+  .modal{margin:8px !important;width:calc(100vw - 16px) !important;max-width:none !important;}
+}
+#mobile-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:#0f0c10;border-top:1px solid rgba(255,255,255,.08);z-index:500;align-items:center;justify-content:space-around;padding:0 4px;}
+.mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:rgba(255,255,255,.4);font-size:9px;cursor:pointer;padding:6px 8px;border-radius:6px;font-family:var(--font);min-width:52px;}
+.mob-nav-btn.active{color:var(--mid-lite);}
+.mob-nav-btn span:first-child{font-size:18px;}
+
+</style>
+<script src="app.js" defer></script>
+</head>
+<body>
+<nav id="mobile-bottom-nav">
+  <button class="mob-nav-btn active" id="mob-today" onclick="goTab('today');p3MobNav('today')"><span>&#128197;</span><span>Today</span></button>
+  <button class="mob-nav-btn" id="mob-pipeline" onclick="goTab('pipeline');p3MobNav('pipeline')"><span>&#128202;</span><span>Pipeline</span></button>
+  <button class="mob-nav-btn" id="mob-accounts" onclick="goTab('accounts');p3MobNav('accounts')"><span>&#127973;</span><span>Accounts</span></button>
+  <button class="mob-nav-btn" id="mob-playbook" onclick="goTab('playbook');p3MobNav('playbook')"><span>&#128216;</span><span>Playbook</span></button>
+  <button class="mob-nav-btn" id="mob-more" onclick="p3MobMore()"><span>&#9776;</span><span>More</span></button>
+</nav>
+<div class="cred-bar">
+  <!-- Left group: labels + inputs -->
+  <div class="cred-inputs-group">
+    <div class="cred-field" style="flex-direction:row;align-items:center;gap:6px;min-width:auto">
+      <div class="status-dot connecting" id="sb-dot" title="Supabase"></div>
+      <div class="cred-label" style="color:rgba(255,255,255,.28);margin:0">SUPABASE</div>
+      <span id="sb-status-label" style="font-size:10px;color:rgba(255,255,255,.28);font-family:var(--font-mono)">connecting…</span>
+      <input type="hidden" id="cfg-sb-url" value="https://auuoypjojfgsqskwitdo.supabase.co">
+      <input type="hidden" id="cfg-sb-key" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1dW95cGpvamZnc3Fza3dpdGRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMTY4NDMsImV4cCI6MjA4OTc5Mjg0M30.SPQOBEE4upf8Fsvn4rtXVf8vIeo2LQVQTT20KXdg35w">
+    </div><div class="cred-divider"></div>
+    <div class="cred-field">
+      <div class="status-dot off" id="gcal-dot"></div>
+      <div class="cred-label">Google Client ID</div>
+      <input class="cred-inp cred-inp-wide" id="cfg-gcal" placeholder="Paste Google OAuth Client ID…" oninput="cfgChanged()">
+    </div>
+    <div class="cred-divider"></div>
+    <div class="cred-field">
+      <div class="status-dot off" id="zoho-dot"></div>
+      <div class="cred-label">Zoho Client ID</div>
+      <input class="cred-inp cred-inp-wide" id="cfg-zoho" placeholder="Paste Zoho Client ID…" oninput="cfgChanged()">
+    </div>
+    <div class="cred-divider"></div>
+    <div class="cred-field" style="max-width:240px">
+      <div class="status-dot off" id="claude-dot"></div>
+      <div class="cred-label">Claude API Key</div>
+      <input class="cred-inp cred-inp-wide" id="cfg-claude" placeholder="sk-ant-api03-…" type="password" oninput="cfgChanged()">
+    </div>
+    <div class="cred-divider"></div>
+    <div class="cred-field" style="max-width:200px">
+      <div class="cred-label">Rep Name</div>
+      <input class="cred-inp" id="cfg-rep" placeholder="Your name" oninput="cfgChanged()">
+    </div>
+  </div>
+  <!-- Right group: always visible, never wraps -->
+  <div class="cred-actions-group">
+    <div class="mini-gauge-wrap" id="mini-gauge-wrap" onclick="goTab('health')" title="Territory Health Score">
+      <canvas id="mini-gauge" width="34" height="19"></canvas>
+      <div>
+        <div style="font-size:7px;letter-spacing:1px;color:rgba(255,255,255,.28);font-weight:600;font-family:var(--font-mono)">HEALTH</div>
+        <div id="mini-score-label" style="font-size:12px;font-weight:700;font-family:var(--font-mono)">—</div>
+      </div>
+    </div>
+    <button id="zoho-connect-btn" onclick="zohoSignIn()" style="display:none;padding:4px 10px;background:rgba(229,68,51,.15);border:1px solid rgba(229,68,51,.3);border-radius:5px;color:#f87171;font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s;flex-shrink:0;white-space:nowrap" title="Connect Zoho CRM">
+      <span id="zoho-btn-label">Connect Zoho</span>
+    </button>
+    <div class="status-dot off" id="zoho-status-dot" title="Zoho CRM" style="display:none"></div>
+    <button onclick="openSearch()" class="cred-search-btn" title="Search — ⌘K">
+      <span>🔍</span>
+      <span class="cred-search-kbd">⌘K</span>
+    </button>
+    <button class="cred-save" onclick="saveConfig()">Save →</button>
+  </div>
+</div>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<div class="header">
+  <div class="header-top">
+    <div class="silver-bar"></div>
+    <div>
+      <div class="eyebrow">Vena Medical · Field Sales Intelligence</div>
+      <div class="h-title">MicroAngioscope™ Account Activation Platform</div>
+    </div>
+    <div class="h-subtitle" id="header-date-label" style="display:none"></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-today" onclick="switchTab('today',this)">Today</button>
+    <button class="tab" id="tab-pipeline" onclick="switchTab('pipeline',this)">Pipeline</button>
+    <button class="tab" id="tab-accounts" onclick="switchTab('accounts',this)">Accounts <span id="tab-acct-count" class="tab-badge" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)"></span></button>
+    <button class="tab" id="tab-playbook" onclick="switchTab('playbook',this)">Playbook</button>
+    <button class="tab" id="tab-inservice" onclick="switchTab('inservice',this)">In-Service</button>
+    <button class="tab" id="tab-proctor" onclick="switchTab('proctor',this)">Proctor</button>
+    <button class="tab" id="tab-calendar" onclick="switchTab('calendar',this)">Calendar</button>
+    <button class="tab" id="tab-health" onclick="switchTab('health',this)" style="color:var(--green)">&#9684; Health</button>
+    <button class="tab" id="tab-manager" onclick="switchTab('manager',this)" style="color:var(--silver-dim)">&#9881; Manager</button>
+    <button class="tab" id="tab-cs-overview" onclick="switchTab('cs-overview',this)" style="color:var(--mid-lite);border-left:1px solid rgba(255,255,255,.08);margin-left:4px">&#10022; CS Overview</button>
+    <button class="tab" id="tab-lumeniq" onclick="switchTab('lumeniq',this)" style="color:#a78bfa">LumenIQ</button>
+    <button class="tab" id="tab-cs-milestones" onclick="switchTab('cs-milestones',this)" style="color:var(--mid-lite)">&#10022; Milestones</button>
+    <button class="tab" id="tab-cs-refsites" onclick="switchTab('cs-refsites',this)" style="color:var(--mid-lite)">&#10022; Ref Sites</button>
+    <button class="tab" id="tab-cs-zoho" onclick="switchTab('cs-zoho',this)" style="color:var(--mid-lite)">&#10022; Zoho</button>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════ TODAY ═══════════ -->
+<div class="panel active" id="panel-today">
+  <div id="today-alert" style="margin-bottom:14px"></div>
+  <div class="today-grid">
+    <div>
+      <!-- Score card -->
+      <div class="score-card" style="margin-bottom:12px">
+        <div style="font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.28);font-weight:600;margin-bottom:10px;font-family:var(--font-mono)">TERRITORY HEALTH SCORE</div>
+        <canvas id="today-gauge" width="220" height="128" style="width:100%;max-width:220px"></canvas>
+        <div style="margin-top:8px">
+          <div id="today-score-num" style="font-size:32px;font-weight:700;color:#fff;line-height:1;font-family:var(--font-mono)">—</div>
+          <div id="today-thresh-label" style="font-size:12px;font-weight:600;letter-spacing:.5px;margin:3px 0 2px">—</div>
+          <div id="today-thresh-desc" style="font-size:10px;color:var(--muted);line-height:1.5">Log your first activity to begin</div>
+        </div>
+        <div class="score-nums">
+          <div class="score-num-item"><div id="today-total" class="score-num-val" style="color:#fff">0</div><div class="score-num-label">TOTAL</div></div>
+          <div class="score-num-item"><div id="today-week" class="score-num-val">0</div><div class="score-num-label">THIS WEEK</div></div>
+          <div class="score-num-item"><div id="today-streak" class="score-num-val">0</div><div class="score-num-label">STREAK</div></div>
+        </div>
+      </div>
+      <!-- Quick log + undo -->
+      <div class="sec-card" style="margin-bottom:12px">
+        <div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Log Activity</span>
+          <button id="today-undo-btn" onclick="undoLastLog()"
+            style="display:none;align-items:center;gap:5px;font-size:10px;padding:3px 9px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:5px;color:var(--amber);cursor:pointer;font-family:var(--font)">↩ Undo</button>
+        </div>
+        <div class="quick-log-grid" id="quick-log-grid"></div>
+        <button id="voice-log-btn" onclick="p2VoiceLog()" style="margin-top:8px;width:100%;padding:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:rgba(255,255,255,.5);font-size:11px;cursor:pointer;font-family:var(--font)">&#127899;&#65039; Voice Log</button>
+      </div>
+      <!-- Quota Pace -->
+      <div class="sec-card" style="margin-bottom:12px">
+        <div id="today-quota-pace"><div style="font-size:11px;color:rgba(255,255,255,.3)">Loading quota pace…</div></div>
+      </div>
+      <!-- Quick Note -->
+      <div class="sec-card">
+        <div class="sec-title">📝 Quick Note</div>
+        <textarea id="today-quick-note" placeholder="Capture a thought, next step, or intel…"
+          style="width:100%;min-height:72px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:10px;color:rgba(255,255,255,.8);font-size:12px;font-family:var(--font);resize:vertical;line-height:1.5;box-sizing:border-box"></textarea>
+      </div>
+    </div>
+
+    <div class="today-right">
+      <!-- Top 3 Today -->
+      <div class="priority-card" style="border-color:rgba(245,158,11,.2)">
+        <div class="pc-header">
+          <div class="pc-title" style="color:#f59e0b">🎯 Today's Top 3</div>
+          <button class="pc-link" onclick="goTab('pipeline')">Pipeline →</button>
+        </div>
+        <div id="today-top3" style="padding:0 4px 4px"></div>
+      </div>
+
+      <!-- Late-stage drift alert -->
+      <div id="today-drift-alert"></div>
+
+      <!-- Today GCal schedule (shown when GCal connected) -->
+      <div id="today-gcal-card" style="display:none"></div>
+
+      <!-- Briefing -->
+      <div class="briefing-card" id="today-briefing" style="margin-bottom:0">
+        <div class="briefing-label">
+          <span style="width:6px;height:6px;border-radius:50%;background:var(--mid-lite);display:inline-block;animation:pulse-dot 2s infinite"></span>
+          DAILY BRIEFING
+        </div>
+        <div id="briefing-content">
+          <div class="briefing-text" style="color:rgba(255,255,255,.4);font-size:12px">Add accounts and log activities to generate your daily briefing.</div>
+        </div>
+      </div>
+
+      <!-- Meet-with launcher -->
+      <div class="meet-launcher">
+        <div class="meet-label">I'M ABOUT TO MEET WITH…</div>
+        <div class="meet-input-row">
+          <input class="meet-inp" id="meet-inp" placeholder="Type a stakeholder role or name…" oninput="renderMeetResults()" onkeydown="meetKeyNav(event)">
+        </div>
+        <div class="meet-results" id="meet-results"></div>
+      </div>
+
+      <!-- Revenue impact this week -->
+      <div class="priority-card" style="border-color:rgba(34,197,94,.15)">
+        <div id="today-revenue-impact"></div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="priority-card">
+        <div class="pc-header">
+          <div class="pc-title">✅ Recent Activity</div>
+          <span id="today-recent-pts" style="font-size:11px;color:var(--green);font-weight:700;font-family:var(--font-mono)"></span>
+        </div>
+        <div class="pc-body" id="today-recent">
+          <div class="action-item-row"><div class="air-meta" style="padding:8px 0">No activities logged yet.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PIPELINE ═══════════ -->
+<div class="panel" id="panel-pipeline">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div class="panel-title">Pipeline Board</div>
+      <div style="padding:0 0 10px"><input id="pl-search" placeholder="Filter accounts…" oninput="renderPipelineBoard()" onkeyup="renderPipelineBoard()" autocomplete="off" style="width:100%;max-width:280px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px 12px;color:#fff;font-size:11px;font-family:var(--font);outline:none"></div>
+      <div class="panel-sub">6-PHASE ACTIVATION JOURNEY — DRAG TO ADVANCE · CLICK COLUMN HEADER TO COLLAPSE</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button onclick="openAddAccount()" class="add-acct-btn">+ Add Account</button>
+      <button onclick="exportPipelineCSV()" style="padding:5px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:5px;color:rgba(255,255,255,.5);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .14s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.5)'">⬇ Export CSV</button>
+      <select id="pipeline-pathway-filter" onchange="renderPipelineBoard()" style="background:#1e1825;border:1px solid var(--border);border-radius:5px;padding:5px 9px;color:rgba(255,255,255,.6);font-size:11px;font-family:var(--font);outline:none">
+        <option value="">All Pathways</option>
+        <option value="neuro">🧠 Neuro / INR</option>
+        <option value="coronary">❤️ Coronary</option>
+        <option value="peripheral">🦵 Peripheral</option>
+      </select>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+    <div style="padding:8px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:7px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,.35);font-family:var(--font-mono)">TOTAL ARR</span>
+      <span id="pl-total-arr" style="font-size:14px;font-weight:700;color:#fff;font-family:var(--font-mono)">—</span><span id="pl-arr-delta" style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--font-mono);margin-left:4px"></span>
+    </div>
+    <div style="padding:8px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:7px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:8px;letter-spacing:1.5px;color:rgba(255,255,255,.35);font-family:var(--font-mono)">WEIGHTED ARR</span>
+      <span id="pl-weighted-arr" style="font-size:14px;font-weight:700;color:var(--amber);font-family:var(--font-mono)">—</span>
+    </div>
+    <div style="padding:8px 12px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:7px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:8px;letter-spacing:1.5px;color:rgba(34,197,94,.6);font-family:var(--font-mono)">CLOSED ARR</span>
+      <span id="pl-closed-arr" style="font-size:14px;font-weight:700;color:var(--green);font-family:var(--font-mono)">—</span>
+    </div>
+  </div>
+  <div class="pipeline-board" id="pipeline-board"></div>
+</div>
+
+<!-- ═══════════ ACCOUNTS ═══════════ -->
+<div class="panel" id="panel-accounts">
+  <div class="panel-title">Account Detail</div>
+  <div class="panel-sub">SELECT ACCOUNT · TRACK PHASE · LOG TOUCHES PER STAKEHOLDER</div>
+  <div class="accounts-layout">
+    <div class="account-list">
+      <div class="acct-list-header">
+        <div style="font-size:11px;font-weight:600;color:#fff">Accounts <span id="acct-count" style="color:var(--muted2);font-weight:400;font-family:var(--font-mono)"></span></div>
+        <button class="add-acct-btn" onclick="openAddAccount()">+ Add</button>
+      </div>
+      <div style="padding:0 10px 10px;flex-shrink:0;position:relative">
+        <input class="acct-search" id="acct-search" placeholder="Search accounts…" oninput="renderAccountList()" onkeyup="renderAccountList()" onchange="renderAccountList()" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="acct-scroll" id="acct-list-items"></div>
+    </div>
+    <div id="acct-detail-pane">
+      <div class="acct-detail">
+        <div class="acct-empty">
+          <div class="acct-empty-icon">🏥</div>
+          <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.35)">Select an account</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.18)">or add a new account to start tracking</div>
+          <button onclick="openAddAccount()" class="add-acct-btn" style="margin-top:8px">+ Add Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PLAYBOOK ═══════════ -->
+<div class="panel" id="panel-playbook">
+  <div id="pw-seq-health-banner"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div>
+      <div class="panel-title">Sales Playbook</div>
+      <div class="panel-sub" style="margin-bottom:0">SELECT PATHWAY · CALL POINT · EMAIL + SCHEDULE + SCRIPT</div>
+    </div>
+    <button onclick="openSearch()" style="display:flex;align-items:center;gap:7px;padding:8px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:7px;color:rgba(255,255,255,.5);font-size:11px;cursor:pointer;font-family:var(--font);transition:all .14s" onmouseover="this.style.borderColor='rgba(255,255,255,.2)'" onmouseout="this.style.borderColor='rgba(255,255,255,.09)'">
+      <span>🔍</span> Search email templates <span style="font-size:9px;font-family:var(--font-mono);opacity:.5;margin-left:4px">⌘K</span>
+    </button>
+  </div>
+
+  <div class="pw-selector" id="pw-selector">
+    <div class="pw-card" onclick="selectPathway('neuro')" id="pw-neuro">
+      <div class="pw-icon">🧠</div><div class="pw-label">Neuro / INR</div>
+      <div class="pw-desc">INR · IR · Endovascular NS<br>Stroke Neurology · Fellows</div>
+      <div class="pw-counts"><span class="pw-count">6 clinical</span><span class="pw-count">8 admin</span></div>
+    </div>
+    <div class="pw-card" onclick="selectPathway('coronary')" id="pw-coronary">
+      <div class="pw-icon">❤️</div><div class="pw-label">Coronary / Cath Lab</div>
+      <div class="pw-desc">Interventional Cardiology · EP<br>Cath Lab RN · Revenue Cycle</div>
+      <div class="pw-counts"><span class="pw-count">3 clinical</span><span class="pw-count">6 admin</span></div>
+    </div>
+    <div class="pw-card" onclick="selectPathway('peripheral')" id="pw-peripheral">
+      <div class="pw-icon">🦵</div><div class="pw-label">Peripheral Vascular</div>
+      <div class="pw-desc">Vascular Surgery · Peripheral IR<br>Floor RN · Revenue Cycle</div>
+      <div class="pw-counts"><span class="pw-count">3 clinical</span><span class="pw-count">6 admin</span></div>
+    </div>
+  </div>
+
+  <div id="pw-callpoint-area" style="display:none">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="back-btn" onclick="clearPathway()">← All Pathways</button>
+      <div id="pw-pathway-header"></div>
+    </div>
+    <div class="seg-row">
+      <button class="seg-btn active" id="seg-clinical" onclick="showSeg('clinical')">🩺 Clinical Champions</button>
+      <button class="seg-btn" id="seg-admin" onclick="showSeg('admin')">🏛️ Admin &amp; Commercial</button>
+    </div>
+    <div id="pw-cp-grid" class="cp-grid"></div>
+  </div>
+
+  <div id="pw-sequence-detail" style="display:none">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+      <button class="back-btn" id="pw-back-to-cp" onclick="clearCallPoint()">← Call Points</button>
+      <div id="pw-seq-detail-header"></div>
+    </div>
+    <div id="pw-seq-touches"></div>
+  </div>
+</div>
+
+<!-- ═══════════ IN-SERVICE ═══════════ -->
+<div class="panel" id="panel-inservice">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="panel-title">In-Service Planner</div>
+      <div class="panel-sub" style="margin-bottom:0">WHAT TYPE OF IN-SERVICE ARE YOU RUNNING?</div>
+    </div>
+    <div id="is-header-context" style="display:none"></div>
+  </div>
+
+  <!-- Step 1: Type selection -->
+  <div id="is-type-step">
+    <div class="is-type-grid">
+
+      <div class="is-type-card" onclick="isSelectType('clinical_demo')" data-type="clinical_demo">
+        <div class="is-type-icon">🔬</div>
+        <div class="is-type-label">Clinical Demo</div>
+        <div class="is-type-desc">First hands-on evaluation in the angio suite, cath lab, or hybrid OR. Physician sees the device for the first time.</div>
+        <div class="is-type-audience-preview">INR / IR / NS attending + Charge RN</div>
+      </div>
+
+      <div class="is-type-card" onclick="isSelectType('nursing_cert')" data-type="nursing_cert">
+        <div class="is-type-icon">👩‍⚕️</div>
+        <div class="is-type-label">Nursing Certification</div>
+        <div class="is-type-desc">Certify floor staff to use and document independently. Reduces callbacks and float pool variability.</div>
+        <div class="is-type-audience-preview">Charge RN / CNE + Full floor team</div>
+      </div>
+
+      <div class="is-type-card" onclick="isSelectType('fellow_sim')" data-type="fellow_sim">
+        <div class="is-type-icon">🎓</div>
+        <div class="is-type-label">Fellow Simulation</div>
+        <div class="is-type-desc">Sim lab session before the first live case. Builds muscle memory, protects the attending relationship, adds CV value.</div>
+        <div class="is-type-audience-preview">Fellow cohort + Programme Director</div>
+      </div>
+
+      <div class="is-type-card" onclick="isSelectType('coding_doc')" data-type="coding_doc">
+        <div class="is-type-icon">💰</div>
+        <div class="is-type-label">Coding &amp; Documentation</div>
+        <div class="is-type-desc">Close ICD-10/CPT documentation gaps. Target: reduce denial rate from 23–38% to under 8%.</div>
+        <div class="is-type-audience-preview">Revenue cycle + Billing team</div>
+      </div>
+
+      <div class="is-type-card" onclick="isSelectType('vac_formulary')" data-type="vac_formulary">
+        <div class="is-type-icon">✅</div>
+        <div class="is-type-label">VAC / Formulary</div>
+        <div class="is-type-desc">Formulary committee presentation. Your clinical champion presents — you handle questions. 15 minutes max.</div>
+        <div class="is-type-audience-preview">VAC committee + Clinical champion</div>
+      </div>
+
+      <div class="is-type-card" onclick="isSelectType('executive_roi')" data-type="executive_roi">
+        <div class="is-type-icon">📊</div>
+        <div class="is-type-label">Executive ROI Briefing</div>
+        <div class="is-type-desc">CMO / Medical Director. Lead with the three-part ROI: reduced re-interventions, MA reimbursement uplift, and litigation protection from the imaging record. No device, no slides — just the numbers.</div>
+        <div class="is-type-audience-preview">CMO / Medical Director + Physician champion</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Step 2: Account + Who to Contact -->
+  <div id="is-contact-step" style="display:none">
+    <button class="back-btn" onclick="isBackToType()" style="margin-bottom:18px">← Change Type</button>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+
+      <!-- Left: Who to contact to book this -->
+      <div>
+        <div class="sec-card" style="margin-bottom:14px" id="is-contact-card">
+          <!-- populated by JS -->
+        </div>
+        <!-- Prerequisite warning if needed -->
+        <div id="is-prereq-warning" style="display:none" class="sec-card" style="border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.04)">
+        </div>
+      </div>
+
+      <!-- Right: Logistics + Audience -->
+      <div>
+        <div class="sec-card" style="margin-bottom:14px">
+          <div class="sec-title">LOGISTICS</div>
+          <div class="fld">
+            <label class="flbl">ACCOUNT / HOSPITAL</label>
+            <input class="finp" id="is-account" placeholder="e.g. Toronto Western Hospital">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fld">
+              <label class="flbl">DATE</label>
+              <input class="finp" id="is-date" type="date">
+            </div>
+            <div class="fld">
+              <label class="flbl">TIME</label>
+              <input class="finp" id="is-time" type="time" value="07:00">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="fld">
+              <label class="flbl">DURATION</label>
+              <select class="fsel" id="is-dur">
+                <option value="20">20 min</option>
+                <option value="30">30 min</option>
+                <option value="45">45 min</option>
+                <option value="60" selected>60 min</option>
+                <option value="90">90 min</option>
+                <option value="120">120 min</option>
+              </select>
+            </div>
+            <div class="fld">
+              <label class="flbl">LOCATION</label>
+              <input class="finp" id="is-loc" placeholder="Angio suite, sim lab…">
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-card" style="margin-bottom:14px">
+          <div class="sec-title">AUDIENCE
+            <span style="font-weight:400;font-size:9px;letter-spacing:0;color:rgba(255,255,255,.3)">toggle to include/exclude</span>
+          </div>
+          <div id="is-audience-chips"></div>
+        </div>
+
+        <button class="btn" id="is-schedule-btn"
+          style="width:100%;background:var(--mid);color:#fff;font-size:12px;padding:10px;border-radius:8px"
+          onclick="isScheduleSubmit()">
+          Schedule → Google Calendar + Log
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Confirmation -->
+  <div id="is-confirm-step" style="display:none">
+    <div id="is-confirm-result"></div>
+    <button class="back-btn" onclick="isBackToType()" style="margin-top:16px">← Plan Another In-Service</button>
+  </div>
+
+  <!-- Scheduled log -->
+  <div style="margin-top:32px" id="is-history">
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:var(--muted2);margin-bottom:10px">
+      SCHEDULED IN-SERVICES
+      <span id="is-history-count" style="font-weight:400"></span>
+    </div>
+    <div id="is-scheduled-items">
+      <div style="font-size:11px;color:var(--muted2);padding:8px 0">No in-services scheduled yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ PROCTOR ═══════════ -->
+<div class="panel" id="panel-proctor">
+  <div class="panel-title">Proctor Requests</div>
+  <div class="panel-sub">SELECT PATHWAY · CHOOSE PHYSICIAN · SUBMIT REQUEST</div>
+
+  <!-- Pathway selector -->
+  <div class="pr-pathway-row" id="pr-pathway-row">
+    <button class="pr-pw-btn active" id="pr-pw-neuro" onclick="prSelectPathway('neuro',this)">🧠 Neuro / INR</button>
+    <button class="pr-pw-btn" id="pr-pw-coronary" onclick="prSelectPathway('coronary',this)">❤️ Coronary</button>
+    <button class="pr-pw-btn" id="pr-pw-peripheral" onclick="prSelectPathway('peripheral',this)">🦵 Peripheral</button>
+  </div>
+
+  <!-- Physician list — rendered per pathway -->
+  <div id="pr-physician-list"></div>
+
+  <!-- Submitted log -->
+  <div style="margin-top:28px">
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:var(--muted2);margin-bottom:10px">
+      SUBMITTED REQUESTS <span id="pr-count-label" style="font-weight:400"></span>
+    </div>
+    <div id="pr-reqs-items">
+      <div style="font-size:11px;color:var(--muted2);padding:8px 0">No proctor requests yet.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ CALENDAR ═══════════ -->
+<div class="panel" id="panel-calendar">
+  <div class="panel-title">Calendar &amp; Activity Log</div>
+  <div class="panel-sub">GOOGLE CALENDAR · LOCAL CRM LOG · QUICK SCHEDULE</div>
+  <div class="quick-sched">
+    <div class="qs-title">QUICK SCHEDULE</div>
+    <div class="qs-row">
+      <div class="qs-field">
+        <div class="qs-label">TYPE</div>
+        <select class="qs-sel" id="qa-type">
+          <option value="inservice">In-Service</option>
+          <option value="case">🩺 Case Support</option>
+          <option value="intro">🤝 Intro / Cold Call</option>
+          <option value="review">📊 Outcome Review</option>
+          <option value="proctor">Proctor Visit</option>
+          <option value="kol">⭐ KOL Meeting</option>
+        </select>
+      </div>
+      <div class="qs-field">
+        <div class="qs-label">ACCOUNT</div>
+        <input class="qs-inp" id="qa-account" placeholder="Type to search accounts…" list="qa-account-list" oninput="qsFilterSH()" autocomplete="off">
+        <datalist id="qa-account-list"></datalist>
+      </div>
+      <div class="qs-field">
+        <div class="qs-label">STAKEHOLDER</div>
+        <select class="qs-sel" id="qa-sh">
+          <option value="">Select target…</option>
+        </select>
+      </div>
+      <div class="qs-field" style="max-width:140px">
+        <div class="qs-label">DATE</div>
+        <input class="qs-inp" id="qa-date" type="date">
+      </div>
+      <button class="qs-go" onclick="quickSchedule()">Schedule →</button>
+    </div>
+  </div>
+  <div class="cal-layout">
+    <!-- GCal -->
+    <div class="cal-card">
+      <div class="cal-toolbar">
+        <div class="cal-toolbar-title">
+          <div class="status-dot off" id="gcal-cal-dot"></div>
+          Google Calendar
+        </div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <button class="ref-btn" onclick="loadGCalEvents()" id="gcal-refresh-btn">↻ Refresh</button>
+          <button class="ref-btn" onclick="signInGoogle()" id="gcal-signin-btn" style="display:none">Sign In</button>
+        </div>
+      </div>
+      <div id="gcal-week-strip" class="cal-week-strip"></div>
+      <div id="gcal-body" class="cal-events">
+        <div class="cal-signin" id="gcal-signin-area">
+          <div style="font-size:40px;opacity:.3">📅</div>
+          <h3 style="font-size:14px;font-weight:700;color:#fff">Connect Google Calendar</h3>
+          <p style="font-size:11px;color:var(--muted);max-width:260px;line-height:1.6">Paste your Google OAuth Client ID in the credentials bar above, then click Sign In.</p>
+          <button class="cal-signin-btn" onclick="signInGoogle()">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Sign in with Google
+          </button>
+        </div>
+        <div id="gcal-events-list" style="display:none"></div>
+      </div>
+    </div>
+    <!-- Activity Log -->
+    <div class="activity-card">
+      <div class="cal-toolbar">
+        <div class="cal-toolbar-title">📋 Activity Log</div>
+        <div style="display:flex;gap:6px">
+          <button class="ref-btn" onclick="exportZohoCSV()">⬇ Activities CSV</button>
+          <button class="ref-btn" onclick="exportZohoContacts()">👤 Contacts CSV</button>
+          <button class="ref-btn" onclick="exportFullAccountsCSV()">Accounts CSV</button>
+          <button class="ref-btn" onclick="clearActivityLog()" style="color:rgba(231,76,60,.6)">Clear</button>
+        </div>
+      </div>
+      <div class="activity-feed" id="activity-feed"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ HEALTH ═══════════ -->
+<div class="panel" id="panel-health">
+  <div class="panel-title">Territory Health</div>
+  <div class="panel-sub">POINTS · CADENCE · STAKEHOLDER ACTIVATION</div>
+  <div class="health-grid">
+    <div class="gauge-card">
+      <div style="font-size:8px;letter-spacing:2px;color:var(--muted);font-weight:700;margin-bottom:10px">TERRITORY HEALTH</div>
+      <canvas id="health-gauge" width="248" height="144" style="width:100%;max-width:248px"></canvas>
+      <div style="margin-top:8px">
+        <div class="mgr-live-score" id="hs-score-num" style="color:#fff">—</div>
+        <div id="hs-thresh-label" style="font-size:12px;font-weight:700;letter-spacing:1px;margin:3px 0 2px">—</div>
+        <div id="hs-thresh-desc" style="font-size:10px;color:var(--muted);line-height:1.5;padding:0 4px">Complete activities to earn points</div>
+      </div>
+      <div style="display:flex;justify-content:space-around;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="text-align:center"><div id="hs-total" style="font-size:18px;font-weight:700;color:#fff">0</div><div style="font-size:8px;letter-spacing:1px;color:var(--muted)">TOTAL</div></div>
+        <div style="text-align:center"><div id="hs-week" style="font-size:18px;font-weight:700">0</div><div style="font-size:8px;letter-spacing:1px;color:var(--muted)">THIS WEEK</div></div>
+        <div style="text-align:center"><div id="hs-streak" style="font-size:18px;font-weight:700">0</div><div style="font-size:8px;letter-spacing:1px;color:var(--muted)">STREAK</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-card" style="margin-bottom:14px">
+        <div class="sec-title">SCORE THRESHOLDS</div>
+        <div id="hs-thresholds"></div>
+      </div>
+      <div class="sec-card">
+        <div class="sec-title">8-WEEK CADENCE</div>
+        <canvas id="cadence-chart" height="70" style="width:100%;display:block"></canvas>
+        <div id="p2-day-bars" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec-card">
+    <div class="sec-title">POINTS BY ACTIVITY</div>
+    <div id="hs-pts-grid" class="pts-grid"></div>
+  </div>
+  <div class="sec-card">
+    <div class="sec-title">STAKEHOLDER ACTIVATION <span style="font-weight:400;font-size:9px;letter-spacing:0;color:rgba(255,255,255,.3)">touches required per role</span></div>
+    <div id="hs-sh-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px"></div>
+    <div class="sec-card" style="margin-top:14px"><div id="hs-outcome"></div></div>
+  </div>
+  <div class="sec-card">
+    <div class="sec-title">SCORED ACTIVITY LOG <span><button onclick="clearHealthHistory()" style="font-size:9px;padding:3px 8px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:rgba(255,255,255,.25);cursor:pointer;font-family:inherit">Clear</button></span></div>
+    <div id="hs-log"></div>
+  </div>
+</div>
+
+<!-- ═══════════ MANAGER ═══════════ -->
+<div class="panel" id="panel-manager">
+  <div class="panel-title">Manager Console</div>
+  <div class="panel-sub">PIPELINE · COMMISSION · COMP PLANS · SCORING · CRM SYNC</div>
+
+  <!-- Manager sub-tabs -->
+  <div class="acct-tabs" style="margin-bottom:20px">
+    <button class="acct-tab"        id="mgr-tab-pipeline"   onclick="switchMgrTab('pipeline')">Pipeline & Deals</button>
+    <button class="acct-tab" id="mgr-tab-exec" onclick="switchMgrTab('exec')">&#127775; Executive View</button>
+    <button class="acct-tab active" id="mgr-tab-commission" onclick="switchMgrTab('commission')">💰 Commission & Comp</button>
+    <button class="acct-tab"        id="mgr-tab-scoring"    onclick="switchMgrTab('scoring')">⭐ Scoring & Activation</button>
+    <button class="acct-tab"        id="mgr-tab-crm"        onclick="switchMgrTab('crm')">🔗 CRM Sync</button>
+  </div>
+
+  <!-- PIPELINE SUB-PANEL -->
+  <div class="acct-sub" id="mgr-sub-pipeline">
+    <div class="mgr-section" id="mgr-quota-section">
+      <!-- rendered by renderQuotaSection() -->
+    </div>
+    <div class="mgr-section" style="margin-top:14px"><div id="mgr-rep-perf"></div></div>
+    <div class="mgr-section" style="margin-top:14px"><div id="mgr-multi-rep"></div></div>
+  </div>
+
+  <!-- EXEC SUB-PANEL -->
+  <div class="acct-sub" id="mgr-sub-exec">
+    <div class="mgr-section"><div id="mgr-exec-dashboard"></div></div>
+  </div>
+
+    <!-- COMMISSION SUB-PANEL -->
+  <div class="acct-sub active" id="mgr-sub-commission">
+    <div class="mgr-section" id="mgr-commission-section">
+      <!-- rendered by renderCommissionDashboard() -->
+    </div>
+  </div>
+
+  <!-- SCORING SUB-PANEL -->
+  <div class="acct-sub" id="mgr-sub-scoring">
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start;flex-wrap:wrap">
+      <div>
+        <div class="mgr-section">
+          <div class="mgr-sec-title">ACTIVITY POINT VALUES</div>
+          <div id="mgr-pts-rows"></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 10px 0;flex-wrap:wrap">
+            <div style="flex:1">
+              <div style="font-size:10px;color:var(--muted);margin-bottom:4px">WEEKLY POINT TARGET</div>
+              <input type="number" class="mgr-inp" id="mgr-weekly-target" style="width:100px" oninput="previewScoreChange()">
+            </div>
+          </div>
+        </div>
+        <div class="mgr-section">
+          <div class="mgr-sec-title">
+            SCORE THRESHOLDS
+            <div style="display:grid;grid-template-columns:130px 72px 72px 1fr;gap:8px;font-size:9px;color:rgba(255,255,255,.25);font-weight:700;padding:0 2px">
+              <span>LABEL</span><span>MIN</span><span>MAX</span><span>DESCRIPTION</span>
+            </div>
+          </div>
+          <div id="mgr-thresh-rows"></div>
+        </div>
+        <div class="mgr-section">
+          <div class="mgr-sec-title">
+            STAKEHOLDER ACTIVATION (TOUCHES REQUIRED)
+            <div style="display:grid;grid-template-columns:1fr 58px 1fr;gap:8px;font-size:9px;color:rgba(255,255,255,.25);font-weight:700;padding:0 2px">
+              <span>STAKEHOLDER</span><span>TOUCHES</span><span>ROLE · PHASE</span>
+            </div>
+          </div>
+          <div id="mgr-sh-rows"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="mgr-save-btn" onclick="saveMgrSettings()">✓ Save Settings</button>
+          <button class="mgr-reset-btn" onclick="resetMgrSettings()">Reset Defaults</button>
+        </div>
+        <div class="mgr-section" style="margin-top:16px">
+          <div class="mgr-sec-title">REP ROSTER</div>
+          <div id="mgr-rep-list"></div>
+          <div style="display:flex;gap:7px;margin-top:10px">
+            <input class="mgr-rep-inp" id="mgr-new-rep" placeholder="Add rep name…" onkeydown="if(event.key==='Enter')addRep()">
+            <button onclick="addRep()" style="padding:6px 12px;background:var(--mid);border:none;border-radius:5px;color:#fff;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">Add</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="mgr-section">
+          <div class="mgr-sec-title">LIVE PREVIEW</div>
+          <div style="text-align:center;padding:12px 0">
+            <canvas id="mgr-mini-gauge" width="200" height="118" style="width:100%;max-width:200px"></canvas>
+            <div class="mgr-live-score" id="mgr-live-score-num" style="color:#fff;margin-top:6px">—</div>
+            <div id="mgr-live-thresh" style="font-size:12px;font-weight:700;color:var(--muted);margin-top:3px">—</div>
+            <div id="mgr-live-week" style="font-size:10px;color:rgba(255,255,255,.3);margin-top:3px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRM SYNC SUB-PANEL -->
+  <div class="acct-sub" id="mgr-sub-crm">
+    <div class="mgr-section" id="mgr-zoho-section">
+      <!-- rendered by renderZohoSection() -->
+    </div>
+    <div class="mgr-section" style="margin-top:14px"><div id="p4-zoho-live"></div></div>
+  </div>
+</div>
+
+
+<!-- ═══════════ CS OVERVIEW ═══════════ -->
+<div class="panel" id="panel-cs-overview">
+  <div class="panel-title">Customer Success — Overview</div>
+  <div class="panel-sub">PORTFOLIO HEALTH · PHASE DISTRIBUTION · AT-RISK ALERTS</div>
+  <div id="cs-kpi-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px"></div>
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start">
+    <div>
+      <div class="sec-card">
+        <div class="sec-title">Phase Distribution</div>
+        <div id="cs-phase-dist"></div>
+      </div>
+      <div class="sec-card" id="cs-risk-section">
+        <div class="sec-title">At-Risk Alerts <span id="cs-risk-count" style="display:none;font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)"></span></div>
+        <div id="cs-risk-alerts"></div>
+      </div>
+    </div>
+    <div class="sec-card" style="position:sticky;top:90px">
+      <div class="sec-title">Recent Activity
+        <button onclick="openCsLogModal()" style="padding:3px 9px;font-size:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;color:rgba(255,255,255,.45);cursor:pointer;font-family:var(--font)">+ Log</button>
+      </div>
+      <div id="cs-activity-feed"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ REIMBURSEMENT ═══════════ -->
+<div class="panel" id="panel-reimb">
+  <div class="panel-title">&#128178; Reimbursement &amp; Revenue Cycle</div>
+  <div class="panel-sub">CPT CODES &middot; BILLING PATHWAYS &middot; DENIAL PREVENTION &middot; DOCUMENTATION</div>
+  <div id="reimb-main"></div>
+</div>
+
+
+<!-- ═══════════ CS ACCOUNTS ═══════════ -->
+<div class="panel" id="panel-lumeniq">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-size:8px;letter-spacing:3px;color:rgba(167,139,250,.5);font-weight:600;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:4px">VENA MEDICAL &middot; FIELD CERTIFICATION</div>
+      <div class="panel-title" style="font-size:22px;background:linear-gradient(135deg,#a78bfa,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">LumenIQ&trade;</div>
+      <div class="panel-sub" style="margin-bottom:0">REP TRAINING &middot; FIELD CERTIFICATION &middot; DAILY PRIORITIES</div>
+    </div>
+    <div id="lumeniq-cert-badge" style="display:none;background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(167,139,250,.08));border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:12px 18px;text-align:center">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(167,139,250,.7);font-family:var(--font-mono);margin-bottom:4px">CERTIFICATION STATUS</div>
+      <div id="lumeniq-cert-label" style="font-size:13px;font-weight:700;color:#a78bfa">&mdash;</div>
+    </div>
+  </div>
+  <div class="sec-card" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(167,139,250,.03));border-color:rgba(167,139,250,.15)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:#a78bfa">Overall Progress</div>
+      <div id="lumeniq-overall-pct" style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:#a78bfa">0%</div>
+    </div>
+    <div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+      <div id="lumeniq-overall-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:4px;transition:width .5s ease"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:14px" id="lumeniq-module-progress"></div>
+  </div>
+  <div class="acct-tabs" id="lumeniq-mod-tabs" style="margin-bottom:20px;flex-wrap:wrap">
+    <button class="acct-tab active" onclick="liqShowMod('territory',this)">&#127760; Territory</button>
+    <button class="acct-tab" onclick="liqShowMod('stakeholders',this)">&#128101; Stakeholders</button>
+    <button class="acct-tab" onclick="liqShowMod('firstcall',this)">&#128222; First Call</button>
+    <button class="acct-tab" onclick="liqShowMod('commercial',this)">&#128188; Commercial</button>
+    <button class="acct-tab" onclick="liqShowMod('clinical',this)">&#129504; Clinical</button>
+    <button class="acct-tab" onclick="liqShowMod('device',this)">&#128300; Device Science</button>
+    <button class="acct-tab" onclick="liqShowMod('objections',this)" style="color:#f59e0b">&#128737; Objections</button>
+    <button class="acct-tab" onclick="liqShowMod('priorities',this)" style="color:#22c55e">&#9889; Daily Priorities</button>
+    <button class="acct-tab" onclick="liqShowMod('playbook',this)">&#128203; CS Playbook</button>
+  </div>
+  <div id="liq-mod-territory" class="acct-sub active"></div>
+  <div id="liq-mod-stakeholders" class="acct-sub"></div>
+  <div id="liq-mod-firstcall" class="acct-sub"></div>
+  <div id="liq-mod-commercial" class="acct-sub"></div>
+  <div id="liq-mod-clinical" class="acct-sub"></div>
+  <div id="liq-mod-device" class="acct-sub"></div>
+  <div id="liq-mod-objections" class="acct-sub"></div>
+  <div id="liq-mod-priorities" class="acct-sub"></div>
+  <div id="liq-mod-playbook" class="acct-sub" style="padding:0;margin:0"></div>
+</div>
+
+<!-- ═══════════ CS MILESTONES BOARD ═══════════ -->
+<div class="panel" id="panel-cs-milestones">
+  <div class="panel-title">Milestone Board</div>
+  <div class="panel-sub">ALL CS ACCOUNTS · PHASE VIEW</div>
+  <div id="cs-board" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start"></div>
+</div>
+
+<!-- ═══════════ CS REFERENCE SITES ═══════════ -->
+<div class="panel" id="panel-cs-refsites">
+  <div class="panel-title">Reference Site Program</div>
+  <div class="panel-sub">THREE-TIER FRAMEWORK · PIPELINE</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+    <div style="background:linear-gradient(135deg,rgba(154,63,121,.1),rgba(95,23,67,.06));border:1px solid rgba(154,63,121,.18);border-radius:var(--r-lg);overflow:hidden">
+      <div style="padding:14px 16px;background:rgba(154,63,121,.1);border-bottom:1px solid rgba(154,63,121,.15);display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:50%;background:rgba(154,63,121,.2);border:1px solid rgba(154,63,121,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-family:var(--font-mono);color:var(--mid-lite);flex-shrink:0">T1</div>
+        <div><div style="font-size:12px;font-weight:700;color:#fff">Active Reference</div><div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.5px">TIER 1</div></div>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;font-family:var(--font-mono)">REQUIREMENTS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--mid-lite);flex-shrink:0">•</span>Phases 1 &amp; 2 milestones complete</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--mid-lite);flex-shrink:0">•</span>≥80% physician roster certified</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--mid-lite);flex-shrink:0">•</span>≥90% staff training complete</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--mid-lite);flex-shrink:0">•</span>≥3 months active use</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px;display:flex;gap:6px"><span style="color:var(--mid-lite);flex-shrink:0">•</span>Willing to accept peer calls</div>
+        <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:10px"></div>
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;font-family:var(--font-mono)">BENEFITS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px">⭐ Priority clinical support</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px">⭐ Early access to new features</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75)">⭐ Quarterly executive reviews</div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(26,107,138,.1),rgba(26,107,138,.04));border:1px solid rgba(26,107,138,.18);border-radius:var(--r-lg);overflow:hidden">
+      <div style="padding:14px 16px;background:rgba(26,107,138,.12);border-bottom:1px solid rgba(26,107,138,.18);display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:50%;background:rgba(26,107,138,.2);border:1px solid rgba(26,107,138,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-family:var(--font-mono);color:#38bdf8;flex-shrink:0">T2</div>
+        <div><div style="font-size:12px;font-weight:700;color:#fff">Featured Site</div><div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.5px">TIER 2</div></div>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;font-family:var(--font-mono)">REQUIREMENTS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:#38bdf8;flex-shrink:0">•</span>All Tier 1 criteria met</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:#38bdf8;flex-shrink:0">•</span>≥2 departments active</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:#38bdf8;flex-shrink:0">•</span>Outcomes data collection active</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:#38bdf8;flex-shrink:0">•</span>≥6 months active use</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px;display:flex;gap:6px"><span style="color:#38bdf8;flex-shrink:0">•</span>Willing to host site visits</div>
+        <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:10px"></div>
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;font-family:var(--font-mono)">BENEFITS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px">🌟 Case study support</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px">🌟 Conference presentation support</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75)">🌟 Advisory board access</div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(21,128,61,.1),rgba(21,128,61,.04));border:1px solid rgba(21,128,61,.18);border-radius:var(--r-lg);overflow:hidden">
+      <div style="padding:14px 16px;background:rgba(21,128,61,.12);border-bottom:1px solid rgba(21,128,61,.18);display:flex;align-items:center;gap:10px">
+        <div style="width:34px;height:34px;border-radius:50%;background:rgba(21,128,61,.2);border:1px solid rgba(21,128,61,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-family:var(--font-mono);color:var(--green);flex-shrink:0">T3</div>
+        <div><div style="font-size:12px;font-weight:700;color:#fff">Centre of Excellence</div><div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.5px">TIER 3</div></div>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;font-family:var(--font-mono)">REQUIREMENTS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--green);flex-shrink:0">•</span>All Tier 2 criteria met</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--green);flex-shrink:0">•</span>≥3 departments active</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--green);flex-shrink:0">•</span>≥12 months active use</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:4px;display:flex;gap:6px"><span style="color:var(--green);flex-shrink:0">•</span>Published outcomes data</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px;display:flex;gap:6px"><span style="color:var(--green);flex-shrink:0">•</span>Serve as training site</div>
+        <div style="height:1px;background:rgba(255,255,255,.06);margin-bottom:10px"></div>
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(255,255,255,.25);margin-bottom:8px;font-family:var(--font-mono)">BENEFITS</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px">🏆 KOL development program</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-bottom:4px">🏆 Publications support</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75)">🏆 Named centre designation</div>
+      </div>
+    </div>
+  </div>
+  <div class="sec-card">
+    <div class="sec-title">Account Pipeline by Tier</div>
+    <div id="cs-ref-pipeline"></div>
+  </div>
+</div>
+
+<!-- ═══════════ CS ZOHO ═══════════ -->
+<div class="panel" id="panel-cs-zoho">
+  <div class="panel-title">Zoho Blueprint</div>
+  <div class="panel-sub">CRM CONFIGURATION · AUTOMATIONS · EMAIL TEMPLATES · DASHBOARD</div>
+
+  <!-- Z1 -->
+  <div style="margin-bottom:20px">
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:12px;text-transform:uppercase;font-family:var(--font-mono);display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(154,63,121,.15);color:var(--mid-lite);border:1px solid rgba(154,63,121,.25);padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600">Z1</span> Module &amp; Field Map
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap" id="z1-mod-tabs">
+      <button class="acct-tab active" style="padding:5px 12px;border-radius:20px;border:1px solid rgba(154,63,121,.35);background:rgba(154,63,121,.15);color:var(--mid-lite)" onclick="csZ1Switch('leads',this)">Leads</button>
+      <button class="acct-tab" style="padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.4)" onclick="csZ1Switch('contacts',this)">Contacts</button>
+      <button class="acct-tab" style="padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.4)" onclick="csZ1Switch('accounts',this)">Accounts</button>
+      <button class="acct-tab" style="padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.4)" onclick="csZ1Switch('deals',this)">Deals</button>
+    </div>
+    <div class="sec-card" style="padding:0;overflow:hidden"><div id="z1-field-table"></div></div>
+  </div>
+
+  <!-- Z2 Workflows -->
+  <div style="margin-bottom:20px">
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:12px;text-transform:uppercase;font-family:var(--font-mono);display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(154,63,121,.15);color:var(--mid-lite);border:1px solid rgba(154,63,121,.25);padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600">Z2</span> Workflow Automations
+    </div>
+    <div id="z2-wf-list"></div>
+  </div>
+
+  <!-- Z3 Email Templates -->
+  <div style="margin-bottom:20px">
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:12px;text-transform:uppercase;font-family:var(--font-mono);display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.2);padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600">Z3</span> Email Templates
+    </div>
+    <div id="z3-tmpl-list"></div>
+  </div>
+
+  <!-- Z4 Dashboard -->
+  <div style="margin-bottom:20px">
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:12px;text-transform:uppercase;font-family:var(--font-mono);display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(154,63,121,.15);color:var(--mid-lite);border:1px solid rgba(154,63,121,.25);padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600">Z4</span> Dashboard &amp; Reports
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div style="font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,.25);font-family:var(--font-mono);margin-bottom:10px">WIDGETS</div>
+        <div id="z4-widget-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:1.5px;color:rgba(255,255,255,.25);font-family:var(--font-mono);margin-bottom:10px">REPORTS</div>
+        <div class="sec-card" style="padding:0;overflow:hidden" id="z4-report-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Z5 Implementation -->
+  <div>
+    <div class="sec-title" style="font-size:9px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.3);margin-bottom:12px;text-transform:uppercase;font-family:var(--font-mono);display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(154,63,121,.15);color:var(--mid-lite);border:1px solid rgba(154,63,121,.25);padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600">Z5</span> Implementation Order
+    </div>
+    <div class="sec-card"><div id="z5-impl-list"></div></div>
+  </div>
+</div>
+
+</div><!-- end .content -->
+
+<!-- ═══════════ SEARCH OVERLAY ═══════════ -->
+<div class="search-overlay" id="search-overlay" onclick="closeSearch(event)">
+  <div class="search-box" onclick="event.stopPropagation()">
+    <div class="search-inp-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-inp" id="search-inp" placeholder="Search accounts, stakeholders, emails…" oninput="renderSearchResults()" onkeydown="searchKeyNav(event)">
+      <span class="search-kbd">ESC</span>
+    </div>
+    <div class="search-results" id="search-results">
+      <div class="search-empty">Start typing to search across accounts, stakeholders, and email templates</div>
+    </div>
+    <div class="search-hint">
+      <span><kbd>↑↓</kbd> navigate</span>
+      <span><kbd>↵</kbd> select</span>
+      <span><kbd>ESC</kbd> close</span>
+      <span><kbd>⌘K</kbd> open anywhere</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EMAIL MODAL ═══════════ -->
+<div class="modal-ov" id="modal-email" onclick="closeModal('modal-email')">
+  <div class="modal" style="border-color:rgba(154,63,121,.35);max-width:640px" onclick="event.stopPropagation()">
+    <div class="modal-title">✉️ Email Template</div>
+    <div class="modal-sub" id="email-modal-sub">—</div>
+    <div class="fld"><label class="flbl" style="color:rgba(255,255,255,.5)">TO (recipient email)</label><input class="finp" id="email-to" placeholder="Recipient email — auto-fills from account contacts…" type="email"></div>
+    <div class="fld"><label class="flbl">Subject Line</label><input class="finp" id="email-subject" style="color:var(--silver);font-weight:600"></div>
+    <div class="fld"><label class="flbl">Body — Replace [Brackets] Before Sending</label><textarea class="finp" id="email-body" rows="9" style="resize:vertical;line-height:1.7;font-size:11px;font-family:var(--font-mono)"></textarea></div>
+    <div class="fld"><label class="flbl">Suggested Attachments</label><div id="email-attachments" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px"></div></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-email')">Close</button>
+      <button class="btn" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6)" onclick="copyEmailBody()">📋 Copy</button>
+      <button class="btn" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6)" onclick="openMailto()">Open in Mail ↗</button>
+      <button class="btn" style="background:#4285f4;color:#fff" onclick="openGmail()">Open in Gmail ↗</button>
+      <button class="btn" style="background:rgba(66,133,244,.25);border:1px solid rgba(66,133,244,.5);color:#93c5fd" onclick="sendViaGmailAPI()" title="Send directly via Gmail API — threads tracked on account">Send via Gmail API ✈</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="schedFromEmail()">+ Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CASE DOCUMENTATION MODAL ═══════════ -->
+<div class="modal-ov" id="modal-case-doc" onclick="closeModal('modal-case-doc')">
+  <div class="modal" style="border-color:rgba(52,211,153,.3);max-width:600px;max-height:90vh;overflow-y:auto" onclick="event.stopPropagation()">
+    <div class="modal-title">&#128203; Document This Case</div>
+    <div class="modal-sub">Generates data credit submission + publication draft</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">INDICATION</label>
+        <select class="fsel" id="cd-indication">
+          <option value="icad">ICAD / Intracranial Atherosclerosis</option>
+          <option value="thrombus">Acute Thrombus / LVO</option>
+          <option value="flow_diverter">Flow Diverter Apposition</option>
+          <option value="stent">Stent Strut Coverage</option>
+          <option value="dissection">Dissection / Wall Injury</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">VESSEL</label>
+        <select class="fsel" id="cd-vessel">
+          <option value="m1">M1 MCA</option><option value="m2">M2 MCA</option>
+          <option value="ica">ICA</option><option value="ba">Basilar</option>
+          <option value="carotid">Carotid (extracranial)</option><option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fld"><label class="flbl">CLINICAL QUESTION BEFORE IMAGING</label>
+      <input class="finp" id="cd-question" placeholder="e.g. Thrombus vs plaque in M1 stenosis prior to anticoagulation decision"></div>
+    <div style="font-size:9px;letter-spacing:2px;font-weight:700;color:rgba(255,255,255,.3);margin:10px 0 8px;font-family:var(--font-mono)">IMAGING FINDINGS</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer"><input type="checkbox" id="cd-thrombus"> Thrombus present</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer"><input type="checkbox" id="cd-plaque"> Plaque / ICAD</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer"><input type="checkbox" id="cd-apposition"> Device apposition adequate</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer"><input type="checkbox" id="cd-struts"> Strut coverage adequate</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer"><input type="checkbox" id="cd-decision-changed"> Treatment decision changed</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.6);cursor:pointer"><input type="checkbox" id="cd-complication"> Complication occurred</label>
+    </div>
+    <div class="fld"><label class="flbl">ADDITIONAL FINDINGS</label>
+      <input class="finp" id="cd-findings" placeholder="e.g. Large white thrombus, no underlying plaque"></div>
+    <div class="fld"><label class="flbl">ATTENDING PHYSICIAN</label>
+      <input class="finp" id="cd-physician" placeholder="e.g. Dr. A. Fahed"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">OUTCOME AT 30 DAYS</label>
+        <select class="fsel" id="cd-outcome">
+          <option value="good">Good (mRS 0-2)</option>
+          <option value="moderate">Moderate (mRS 3-4)</option>
+          <option value="poor">Poor (mRS 5-6)</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">LINKED ACCOUNT</label>
+        <select class="fsel" id="cd-account"></select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">OUTCOME AT 30 DAYS</label>
+        <select class="fsel" id="cd-outcome">
+          <option value="good">Good (mRS 0-2)</option>
+          <option value="moderate">Moderate (mRS 3-4)</option>
+          <option value="poor">Poor (mRS 5-6)</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">LINKED ACCOUNT</label>
+        <select class="fsel" id="cd-account"></select>
+      </div>
+    </div>
+    <div class="fld"><label class="flbl">ATTENDING PHYSICIAN</label>
+      <input class="finp" id="cd-physician" placeholder="e.g. Dr. A. Fahed"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-case-doc')">Cancel</button>
+      <button class="btn" style="background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.3);color:#34d399" onclick="p3SubmitCaseDoc()">Generate Outputs &#8594;</button>
+    </div>
+    <div id="cd-output" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- ═══════════ IN-SERVICE MODAL ═══════════ -->
+<div class="modal-ov" id="modal-is" onclick="closeModal('modal-is')">
+  <div class="modal" style="border-color:var(--silver)" onclick="event.stopPropagation()">
+    <div class="modal-title">📋 Schedule In-Service</div>
+    <div class="modal-sub" id="mis-sub">—</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">ACCOUNT / HOSPITAL</label><input class="finp" id="is-account" placeholder="Hospital name…"></div>
+      <div class="fld"><label class="flbl">DATE</label><input class="finp" id="is-date" type="date"></div>
+      <div class="fld"><label class="flbl">TIME</label><input class="finp" id="is-time" type="time" value="07:00"></div>
+      <div class="fld"><label class="flbl">DURATION (MIN)</label>
+        <select class="fsel" id="is-dur"><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>60 min</option><option value="90">90 min</option><option value="120">120 min</option></select>
+      </div>
+    </div>
+    <div class="fld"><label class="flbl">LOCATION / ROOM</label><input class="finp" id="is-loc" placeholder="Angio Suite, Room 4B…"></div>
+    <div class="fld"><label class="flbl">TARGET AUDIENCE</label><div class="att-chips" id="is-att"></div></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-is')">Cancel</button>
+      <button class="btn" id="is-submit-btn" style="background:var(--mid);color:#fff" onclick="submitInservice()">Schedule → GCal + Log</button>
+    </div>
+    <div id="is-confirm-area"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PROCTOR MODAL ═══════════ -->
+<div class="modal-ov" id="modal-pr" onclick="closeModal('modal-pr')">
+  <div class="modal" style="border-color:var(--blue)" onclick="event.stopPropagation()">
+    <div class="modal-title">🏥 Request a Proctor</div>
+    <div class="modal-sub" id="mpr-sub">—</div>
+    <div class="fld"><label class="flbl">ACCOUNT / HOSPITAL</label><input class="finp" id="pr-account" placeholder="Hospital name…"></div>
+    <div class="fld"><label class="flbl">PHYSICIAN</label><input class="finp" id="pr-phys" placeholder="Dr. Name…"></div>
+    <div class="fld"><label class="flbl">CASE TYPE / INDICATION</label><input class="finp" id="pr-case" placeholder="e.g. Femoral arterial access, complex anatomy"></div>
+    <div class="fld"><label class="flbl">PREFERRED DATE(S)</label><input class="finp" id="pr-date" type="date"></div>
+    <div class="fld"><label class="flbl">NOTES FOR PROCTOR</label><textarea class="finp" id="pr-notes" rows="3" placeholder="Case complexity, anatomy notes, learning objectives…"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-pr')">Cancel</button>
+      <button class="btn" id="pr-submit-btn" style="background:var(--blue,#2e86c1);color:#fff" onclick="submitProctor()">Submit Request</button>
+    </div>
+    <div id="pr-confirm-area"></div>
+  </div>
+</div>
+
+<!-- ═══════════ ADD ACCOUNT MODAL ═══════════ -->
+<div class="modal-ov" id="modal-add-acct" onclick="closeModal('modal-add-acct')">
+  <div class="modal" style="border-color:var(--mid);max-width:560px" onclick="event.stopPropagation()">
+    <div class="modal-title">+ Add Account</div>
+    <div class="modal-sub">Hospital / health system — track CCU placement and disposable pull-through</div>
+
+    <!-- Identity -->
+    <div class="fld" style="position:relative">
+      <label class="flbl">HOSPITAL / INSTITUTION NAME</label>
+      <input class="finp" id="new-acct-name" placeholder="Type hospital name…" autocomplete="off" oninput="p3ZohoSuggest(this.value)" onblur="setTimeout(function(){var d=document.getElementById('acct-suggest-list');if(d)d.style.display='none';},200)">
+      <div id="acct-suggest-list" style="display:none;position:absolute;top:100%;left:0;right:0;background:#1c1820;border:1px solid rgba(154,63,121,.4);border-radius:0 0 8px 8px;max-height:220px;overflow-y:auto;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.6)"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">CITY / REGION</label><input class="finp" id="new-acct-city" placeholder="e.g. Toronto, ON"></div>
+      <div class="fld"><label class="flbl">PRIMARY PATHWAY</label>
+        <select class="fsel" id="new-acct-pathway">
+          <option value="neuro">🧠 Neuro / INR (Primary)</option>
+          <option value="coronary">❤️ Coronary / Cath Lab</option>
+          <option value="peripheral">🦵 Peripheral Vascular</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Eval stage -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">EVALUATION STAGE</label>
+        <select class="fsel" id="new-acct-eval">
+          <option value="none">No active evaluation</option>
+          <option value="trial">Clinical Trial / IRB</option>
+          <option value="eval">Product Evaluation</option>
+          <option value="committed">Committed Account</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">STARTING PHASE</label>
+        <select class="fsel" id="new-acct-phase">
+          <option value="1">Phase 1 — Clinical Champion</option>
+          <option value="2">Phase 2 — VAC & Education</option>
+          <option value="3">Phase 3 — Admin Leadership</option>
+          <option value="4">Phase 4 — Contracts & IT</option>
+          <option value="5">Phase 5 — Procurement & PO</option>
+          <option value="6">Phase 6 — Go-Live</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CCU -->
+    <div style="font-size:9px;letter-spacing:2px;font-weight:700;color:rgba(255,255,255,.3);margin:12px 0 8px;font-family:var(--font-mono)">CCU — CAPITAL CONSOLE UNIT</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">CCU STATUS</label>
+        <select class="fsel" id="new-acct-ccu-status">
+          <option value="none">Not yet quoted</option>
+          <option value="quoted">Quoted</option>
+          <option value="approved">Capital Approved</option>
+          <option value="placed">Placed / Installed</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">CCU PRICE ($)</label>
+        <input class="finp" id="new-acct-ccu-price" type="number" placeholder="e.g. 45000"></div>
+      <div class="fld"><label class="flbl">CASES / MONTH (current)</label>
+        <input class="finp" id="new-acct-cases-month" type="number" placeholder="e.g. 8"></div>
+    </div>
+
+    <!-- Disposable -->
+    <div style="font-size:9px;letter-spacing:2px;font-weight:700;color:rgba(255,255,255,.3);margin:12px 0 8px;font-family:var(--font-mono)">DISPOSABLE — MICROANGIOSCOPE™</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">PRICE PER UNIT ($)</label>
+        <input class="finp" id="new-acct-price" type="number" id="new-acct-price" placeholder="Default from pricing config"></div>
+      <div class="fld"><label class="flbl">CONTRACTED CASES/MO</label>
+        <input class="finp" id="new-acct-units" type="number" placeholder="e.g. 10"></div>
+      <div class="fld"><label class="flbl">ANNUAL CASE VOLUME</label>
+        <input class="finp" id="new-acct-volume" type="number" placeholder="e.g. 120"></div>
+    </div>
+
+    <!-- Pipeline -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+      <div class="fld"><label class="flbl">WIN PROBABILITY</label>
+        <select class="fsel" id="new-acct-prob">
+          <option value="cold">❄️ Cold</option>
+          <option value="engaged" selected>🔵 Engaged</option>
+          <option value="champion">🟡 Champion</option>
+          <option value="vac">🟠 VAC Pending</option>
+          <option value="closing">🟢 Closing</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">NEXT ACTION DATE</label>
+        <input class="finp" id="new-acct-next" type="date"></div>
+    </div>
+    <div class="fld"><label class="flbl">ENTRY NOTES</label>
+      <input class="finp" id="new-acct-notes" placeholder="Entry point, who introduced you, how evaluation began…"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-acct')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="addAccount()">Add Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CALL PREP OVERLAY ═══════════ -->
+<div id="call-prep-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;align-items:flex-start;justify-content:center;padding:60px 20px 20px;backdrop-filter:blur(6px);overflow-y:auto">
+  <div style="background:#17141a;border-radius:16px;width:100%;max-width:560px;border:1px solid rgba(154,63,121,.3);box-shadow:0 32px 80px rgba(0,0,0,.8);padding:22px" onclick="event.stopPropagation()">
+    <div id="call-prep-overlay-body"></div>
+  </div>
+</div>
+<style>
+#call-prep-overlay{display:none}#call-prep-overlay.open{display:flex;animation:fadeIn .15s ease}
+</style>
+
+<!-- ═══════════ ADD CONTACT MODAL ═══════════ -->
+<div class="modal-ov" id="modal-add-contact" onclick="closeModal('modal-add-contact')">
+  <div class="modal" style="border-color:rgba(154,63,121,.35);max-width:420px" onclick="event.stopPropagation()">
+    <div class="modal-title">+ Add Contact</div>
+    <div class="modal-sub" id="contact-modal-sub">Named contact for this stakeholder role</div>
+    <div class="fld"><label class="flbl">FULL NAME</label><input class="finp" id="contact-name" placeholder="Dr. Amira Khalil"></div>
+    <div class="fld"><label class="flbl">TITLE / ROLE</label><input class="finp" id="contact-title" placeholder="e.g. Director, INR — Interventional Neuroradiology"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">EMAIL</label><input class="finp" id="contact-email" type="email" placeholder="a.khalil@hospital.ca"></div>
+      <div class="fld"><label class="flbl">PHONE</label><input class="finp" id="contact-phone" type="tel" placeholder="+1 416 555 0100"></div>
+    </div>
+    <div class="fld"><label class="flbl">RELATIONSHIP NOTES</label><textarea class="finp" id="contact-notes" rows="2" placeholder="How you met, their interests, what they care about, best time to reach…" style="resize:vertical;font-size:11px"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-contact')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="submitAddContact()">Add Contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ADD OBJECTION MODAL ═══════════ -->
+<div class="modal-ov" id="modal-add-objection" onclick="closeModal('modal-add-objection')">
+  <div class="modal" style="border-color:rgba(239,68,68,.3);max-width:420px" onclick="event.stopPropagation()">
+    <div class="modal-title">⚠ Log Objection / Blocker</div>
+    <div class="modal-sub" id="objection-modal-sub">Track what's blocking this account</div>
+    <div class="fld"><label class="flbl">TYPE</label>
+      <select class="fsel" id="obj-type">
+        <option value="Budget">💰 Budget — No budget / budget frozen</option>
+        <option value="Champion">🧠 Champion — No physician on-side yet</option>
+        <option value="VAC Stall">✅ VAC Stall — Committee tabled or delayed</option>
+        <option value="Competitor">⚔️ Competitor — Evaluating alternative</option>
+        <option value="IT/Legal">🔒 IT / Legal — Compliance or contract block</option>
+        <option value="Timing">📅 Timing — Wrong time, revisit later</option>
+        <option value="Education">📚 Education — Needs more clinical evidence</option>
+        <option value="Other">📌 Other</option>
+      </select>
+    </div>
+    <div class="fld"><label class="flbl">DETAIL</label><textarea class="finp" id="obj-text" rows="2" placeholder="What specifically is the objection? What did they say?" style="resize:vertical;font-size:11px"></textarea></div>
+    <div class="fld"><label class="flbl">PROPOSED RESPONSE / NEXT STEP</label><textarea class="finp" id="obj-response" rows="2" placeholder="How will you address this? What's the play?" style="resize:vertical;font-size:11px"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-objection')">Cancel</button>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="submitAddObjection()">Log Objection</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ LOG ACTIVITY MODAL ═══════════ -->
+<div class="modal-ov" id="modal-log-act" onclick="closeModal('modal-log-act')">
+  <div class="modal" style="border-color:rgba(154,63,121,.4);max-width:420px" onclick="event.stopPropagation()">
+    <div class="modal-title">📝 Log Activity</div>
+    <div class="modal-sub" id="log-act-sub">Record this touch</div>
+    <div class="fld"><label class="flbl">ACCOUNT</label>
+      <select class="fsel" id="log-act-acct"><option value="">None / not account-specific</option></select>
+    </div>
+    <div class="fld"><label class="flbl">STAKEHOLDER</label>
+      <select class="fsel" id="log-act-sh"><option value="">Select stakeholder…</option></select>
+    </div>
+    <div class="fld"><label class="flbl">DATE</label><input class="finp" id="log-act-date" type="date"></div>
+    <div class="fld"><label class="flbl">NOTES (OPTIONAL)</label><input class="finp" id="log-act-notes" placeholder="What happened? Next step?"></div>
+    <div id="log-act-pts-preview" style="font-size:13px;font-weight:700;color:var(--green);text-align:center;padding:8px 0"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-log-act')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="submitLogActivity()">Log Activity</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ CS ADD ACCOUNT MODAL ═══════════ -->
+<div class="modal-ov" id="modal-cs-add-acct" onclick="if(event.target===this)closeModal('modal-cs-add-acct')">
+  <div class="modal" style="border-color:var(--mid);max-width:540px" onclick="event.stopPropagation()">
+    <div class="modal-title">+ Add CS Account</div>
+    <div class="modal-sub">Post-approval customer success tracking</div>
+    <div class="fld"><label class="flbl">ACCOUNT NAME *</label><input class="finp" id="cs-na-name" placeholder="e.g. Toronto General Hospital"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">CITY / REGION</label><input class="finp" id="cs-na-city" placeholder="e.g. Toronto, ON"></div>
+      <div class="fld"><label class="flbl">ACCOUNT TYPE</label>
+        <select class="fsel" id="cs-na-type">
+          <option>Academic Medical Centre</option><option>Community Hospital</option>
+          <option>Hybrid OR/Angio</option><option>Neuro IR Centre</option>
+          <option>Cath Lab</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">CONVERSION PATH</label>
+        <select class="fsel" id="cs-na-path">
+          <option>Eval → Approval</option><option>Direct Approval</option><option>Pilot Expansion</option>
+        </select>
+      </div>
+      <div class="fld"><label class="flbl">GO-LIVE DATE</label><input class="finp" id="cs-na-date" type="date"></div>
+    </div>
+    <div class="fld"><label class="flbl">CLINICAL CHAMPION</label><input class="finp" id="cs-na-champion" placeholder="Primary physician contact"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fld"><label class="flbl">TOTAL PHYSICIANS</label><input class="finp" id="cs-na-physicians" type="number" placeholder="0" min="0"></div>
+      <div class="fld"><label class="flbl">TOTAL STAFF</label><input class="finp" id="cs-na-staff" type="number" placeholder="0" min="0"></div>
+    </div>
+    <div class="fld"><label class="flbl">DEPARTMENTS</label><input class="finp" id="cs-na-depts" placeholder="e.g. Neuro IR, Cath Lab, OR"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cs-add-acct')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="csSubmitAddAcct()">Add Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CS LOG ACTIVITY MODAL ═══════════ -->
+<div class="modal-ov" id="modal-cs-log" onclick="if(event.target===this)closeModal('modal-cs-log')">
+  <div class="modal" style="border-color:rgba(154,63,121,.4);max-width:420px" onclick="event.stopPropagation()">
+    <div class="modal-title">📝 Log CS Activity</div>
+    <div class="modal-sub">Record a customer success touch</div>
+    <div class="fld"><label class="flbl">ACCOUNT</label><select class="fsel" id="cs-log-acct"></select></div>
+    <div class="fld"><label class="flbl">ACTIVITY TYPE</label>
+      <select class="fsel" id="cs-log-type">
+        <option>Check-In Call</option><option>Site Visit</option><option>Training Session</option>
+        <option>Case Support</option><option>QBR</option><option>Issue Escalation</option>
+        <option>Reference Call</option><option>Email Follow-Up</option>
+      </select>
+    </div>
+    <div class="fld"><label class="flbl">NOTES</label><textarea class="finp" id="cs-log-notes" rows="3" placeholder="What happened? Next step?" style="resize:vertical;font-size:11px"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cs-log')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="csSubmitLog()">Log Activity</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CS ADD PHYSICIAN MODAL ═══════════ -->
+<div class="modal-ov" id="modal-cs-add-phys" onclick="if(event.target===this)closeModal('modal-cs-add-phys')">
+  <div class="modal" style="border-color:rgba(154,63,121,.3);max-width:380px" onclick="event.stopPropagation()">
+    <div class="modal-title">+ Add Physician</div>
+    <div class="fld"><label class="flbl">FULL NAME *</label><input class="finp" id="cs-ap-name" placeholder="Dr. First Last"></div>
+    <div class="fld"><label class="flbl">TITLE / SPECIALTY</label><input class="finp" id="cs-ap-title" placeholder="e.g. Neuro IR Attending"></div>
+    <input type="hidden" id="cs-ap-acct-id">
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cs-add-phys')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="csSubmitAddPhys()">Add Physician</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CS SET REF TIER MODAL ═══════════ -->
+<div class="modal-ov" id="modal-cs-ref-tier" onclick="if(event.target===this)closeModal('modal-cs-ref-tier')">
+  <div class="modal" style="border-color:rgba(245,158,11,.3);max-width:360px" onclick="event.stopPropagation()">
+    <div class="modal-title">Set Reference Tier</div>
+    <div class="fld"><label class="flbl">TIER</label>
+      <select class="fsel" id="cs-ref-tier-sel">
+        <option value="None">None</option>
+        <option value="T1">Tier 1 — Active Reference</option>
+        <option value="T2">Tier 2 — Featured Site</option>
+        <option value="T3">Tier 3 — Centre of Excellence</option>
+      </select>
+    </div>
+    <input type="hidden" id="cs-ref-tier-acct-id">
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cs-ref-tier')">Cancel</button>
+      <button class="btn" style="background:var(--mid);color:#fff" onclick="csSubmitRefTier()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CS CONFIRM DELETE MODAL ═══════════ -->
+<div class="modal-ov" id="modal-cs-delete" onclick="if(event.target===this)closeModal('modal-cs-delete')">
+  <div class="modal" style="border-color:rgba(239,68,68,.3);max-width:380px" onclick="event.stopPropagation()">
+    <div class="modal-title">Delete CS Account</div>
+    <div class="modal-sub">Are you sure you want to delete <strong id="cs-delete-name" style="color:#fff"></strong>? This cannot be undone.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('modal-cs-delete')">Cancel</button>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="csConfirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+</body>
+</html>
